@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HashTable.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TPO Lab 1</a> &gt; <a href="index.source.html" class="el_package">ru.itmo.tpo.task2</a> &gt; <span class="el_source">HashTable.java</span></div><h1>HashTable.java</h1><pre class="source lang-java linenums">package ru.itmo.tpo.task2;
+
+import java.util.LinkedList;
+
+/**
+ * Хеш-таблица с закрытой адресацией (метод цепочек / open hashing).
+ * Каждый слот таблицы содержит связанный список элементов.
+ *
+ * Поддерживает операции: вставка (insert), поиск (search), удаление (delete).
+ *
+ * Визуализация: https://www.cs.usfca.edu/~galles/visualization/OpenHash.html
+ */
+public class HashTable {
+
+    /**
+     * Запись хеш-таблицы: ключ-значение.
+     */
+    public static class Entry {
+        private final int key;
+        private int value;
+
+<span class="fc" id="L22">        public Entry(int key, int value) {</span>
+<span class="fc" id="L23">            this.key = key;</span>
+<span class="fc" id="L24">            this.value = value;</span>
+<span class="fc" id="L25">        }</span>
+
+        public int getKey() {
+<span class="fc" id="L28">            return key;</span>
+        }
+
+        public int getValue() {
+<span class="fc" id="L32">            return value;</span>
+        }
+
+        public void setValue(int value) {
+<span class="fc" id="L36">            this.value = value;</span>
+<span class="fc" id="L37">        }</span>
+
+        @Override
+        public String toString() {
+<span class="nc" id="L41">            return &quot;(&quot; + key + &quot;=&quot; + value + &quot;)&quot;;</span>
+        }
+    }
+
+    // Характерные точки алгоритма (для тестирования прохождения)
+<span class="fc" id="L46">    public enum TracePoint {</span>
+<span class="fc" id="L47">        HASH_COMPUTED,           // A: Хеш вычислен</span>
+<span class="fc" id="L48">        BUCKET_EMPTY,            // B: Корзина пуста</span>
+<span class="fc" id="L49">        BUCKET_NOT_EMPTY,        // C: Корзина не пуста</span>
+<span class="fc" id="L50">        KEY_FOUND,               // D: Ключ найден в цепочке</span>
+<span class="fc" id="L51">        KEY_NOT_FOUND,           // E: Ключ не найден в цепочке</span>
+<span class="fc" id="L52">        ENTRY_INSERTED,          // F: Элемент вставлен</span>
+<span class="fc" id="L53">        ENTRY_UPDATED,           // G: Элемент обновлён</span>
+<span class="fc" id="L54">        ENTRY_DELETED,           // H: Элемент удалён</span>
+<span class="fc" id="L55">        SEARCH_RESULT_RETURNED   // I: Результат поиска возвращён</span>
+    }
+
+    /**
+     * Интерфейс для отслеживания прохождения характерных точек.
+     */
+    public interface TraceListener {
+        void onTracePoint(TracePoint point);
+    }
+
+    private final LinkedList&lt;Entry&gt;[] table;
+    private final int capacity;
+    private int size;
+    private TraceListener traceListener;
+
+    /**
+     * Создаёт хеш-таблицу с указанной ёмкостью.
+     *
+     * @param capacity количество корзин (buckets)
+     * @throws IllegalArgumentException если capacity &lt;= 0
+     */
+    @SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L77">    public HashTable(int capacity) {</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">        if (capacity &lt;= 0) {</span>
+<span class="fc" id="L79">            throw new IllegalArgumentException(&quot;Ёмкость должна быть положительной: &quot; + capacity);</span>
+        }
+<span class="fc" id="L81">        this.capacity = capacity;</span>
+<span class="fc" id="L82">        this.table = new LinkedList[capacity];</span>
+<span class="fc" id="L83">        this.size = 0;</span>
+<span class="fc" id="L84">    }</span>
+
+    /**
+     * Устанавливает слушателя для отслеживания характерных точек алгоритма.
+     */
+    public void setTraceListener(TraceListener listener) {
+<span class="fc" id="L90">        this.traceListener = listener;</span>
+<span class="fc" id="L91">    }</span>
+
+    private void trace(TracePoint point) {
+<span class="fc bfc" id="L94" title="All 2 branches covered.">        if (traceListener != null) {</span>
+<span class="fc" id="L95">            traceListener.onTracePoint(point);</span>
+        }
+<span class="fc" id="L97">    }</span>
+
+    /**
+     * Вычисляет хеш для ключа.
+     * hash(key) = key mod capacity
+     *
+     * @param key ключ
+     * @return индекс корзины
+     */
+    int hash(int key) {
+<span class="fc" id="L107">        return Math.floorMod(key, capacity);</span>
+    }
+
+    /**
+     * Вставляет пару ключ-значение в хеш-таблицу.
+     * Если ключ уже существует, обновляет значение.
+     *
+     * Алгоритм:
+     * 1. Вычислить хеш → индекс корзины         [HASH_COMPUTED]
+     * 2. Если корзина пуста → создать список      [BUCKET_EMPTY]
+     *    Иначе → искать ключ в цепочке            [BUCKET_NOT_EMPTY]
+     * 3. Если ключ найден → обновить значение     [KEY_FOUND, ENTRY_UPDATED]
+     *    Если не найден → добавить в конец         [KEY_NOT_FOUND, ENTRY_INSERTED]
+     *
+     * @param key   ключ
+     * @param value значение
+     */
+    public void insert(int key, int value) {
+<span class="fc" id="L125">        int index = hash(key);</span>
+<span class="fc" id="L126">        trace(TracePoint.HASH_COMPUTED);</span>
+
+<span class="fc bfc" id="L128" title="All 2 branches covered.">        if (table[index] == null) {</span>
+<span class="fc" id="L129">            trace(TracePoint.BUCKET_EMPTY);</span>
+<span class="fc" id="L130">            table[index] = new LinkedList&lt;&gt;();</span>
+<span class="fc" id="L131">            table[index].add(new Entry(key, value));</span>
+<span class="fc" id="L132">            size++;</span>
+<span class="fc" id="L133">            trace(TracePoint.ENTRY_INSERTED);</span>
+        } else {
+<span class="fc" id="L135">            trace(TracePoint.BUCKET_NOT_EMPTY);</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">            for (Entry entry : table[index]) {</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">                if (entry.getKey() == key) {</span>
+<span class="fc" id="L138">                    trace(TracePoint.KEY_FOUND);</span>
+<span class="fc" id="L139">                    entry.setValue(value);</span>
+<span class="fc" id="L140">                    trace(TracePoint.ENTRY_UPDATED);</span>
+<span class="fc" id="L141">                    return;</span>
+                }
+<span class="fc" id="L143">            }</span>
+<span class="fc" id="L144">            trace(TracePoint.KEY_NOT_FOUND);</span>
+<span class="fc" id="L145">            table[index].add(new Entry(key, value));</span>
+<span class="fc" id="L146">            size++;</span>
+<span class="fc" id="L147">            trace(TracePoint.ENTRY_INSERTED);</span>
+        }
+<span class="fc" id="L149">    }</span>
+
+    /**
+     * Ищет значение по ключу в хеш-таблице.
+     *
+     * Алгоритм:
+     * 1. Вычислить хеш → индекс корзины         [HASH_COMPUTED]
+     * 2. Если корзина пуста → вернуть null        [BUCKET_EMPTY, SEARCH_RESULT_RETURNED]
+     *    Иначе → искать ключ в цепочке            [BUCKET_NOT_EMPTY]
+     * 3. Если найден → вернуть значение           [KEY_FOUND, SEARCH_RESULT_RETURNED]
+     *    Если не найден → вернуть null             [KEY_NOT_FOUND, SEARCH_RESULT_RETURNED]
+     *
+     * @param key ключ для поиска
+     * @return значение или null, если ключ не найден
+     */
+    public Integer search(int key) {
+<span class="fc" id="L165">        int index = hash(key);</span>
+<span class="fc" id="L166">        trace(TracePoint.HASH_COMPUTED);</span>
+
+<span class="fc bfc" id="L168" title="All 2 branches covered.">        if (table[index] == null) {</span>
+<span class="fc" id="L169">            trace(TracePoint.BUCKET_EMPTY);</span>
+<span class="fc" id="L170">            trace(TracePoint.SEARCH_RESULT_RETURNED);</span>
+<span class="fc" id="L171">            return null;</span>
+        }
+
+<span class="fc" id="L174">        trace(TracePoint.BUCKET_NOT_EMPTY);</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">        for (Entry entry : table[index]) {</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">            if (entry.getKey() == key) {</span>
+<span class="fc" id="L177">                trace(TracePoint.KEY_FOUND);</span>
+<span class="fc" id="L178">                trace(TracePoint.SEARCH_RESULT_RETURNED);</span>
+<span class="fc" id="L179">                return entry.getValue();</span>
+            }
+<span class="fc" id="L181">        }</span>
+
+<span class="fc" id="L183">        trace(TracePoint.KEY_NOT_FOUND);</span>
+<span class="fc" id="L184">        trace(TracePoint.SEARCH_RESULT_RETURNED);</span>
+<span class="fc" id="L185">        return null;</span>
+    }
+
+    /**
+     * Удаляет элемент по ключу из хеш-таблицы.
+     *
+     * Алгоритм:
+     * 1. Вычислить хеш → индекс корзины         [HASH_COMPUTED]
+     * 2. Если корзина пуста → элемент не найден   [BUCKET_EMPTY, KEY_NOT_FOUND]
+     *    Иначе → искать ключ в цепочке            [BUCKET_NOT_EMPTY]
+     * 3. Если найден → удалить элемент            [KEY_FOUND, ENTRY_DELETED]
+     *    Если не найден → ничего не делать         [KEY_NOT_FOUND]
+     *
+     * @param key ключ для удаления
+     * @return true если элемент был удалён, false если не найден
+     */
+    public boolean delete(int key) {
+<span class="fc" id="L202">        int index = hash(key);</span>
+<span class="fc" id="L203">        trace(TracePoint.HASH_COMPUTED);</span>
+
+<span class="fc bfc" id="L205" title="All 2 branches covered.">        if (table[index] == null) {</span>
+<span class="fc" id="L206">            trace(TracePoint.BUCKET_EMPTY);</span>
+<span class="fc" id="L207">            trace(TracePoint.KEY_NOT_FOUND);</span>
+<span class="fc" id="L208">            return false;</span>
+        }
+
+<span class="fc" id="L211">        trace(TracePoint.BUCKET_NOT_EMPTY);</span>
+<span class="fc" id="L212">        var iterator = table[index].iterator();</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">        while (iterator.hasNext()) {</span>
+<span class="fc" id="L214">            Entry entry = iterator.next();</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">            if (entry.getKey() == key) {</span>
+<span class="fc" id="L216">                trace(TracePoint.KEY_FOUND);</span>
+<span class="fc" id="L217">                iterator.remove();</span>
+<span class="fc" id="L218">                size--;</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">                if (table[index].isEmpty()) {</span>
+<span class="fc" id="L220">                    table[index] = null;</span>
+                }
+<span class="fc" id="L222">                trace(TracePoint.ENTRY_DELETED);</span>
+<span class="fc" id="L223">                return true;</span>
+            }
+<span class="fc" id="L225">        }</span>
+
+<span class="fc" id="L227">        trace(TracePoint.KEY_NOT_FOUND);</span>
+<span class="fc" id="L228">        return false;</span>
+    }
+
+    /**
+     * @return текущее количество элементов в таблице
+     */
+    public int getSize() {
+<span class="fc" id="L235">        return size;</span>
+    }
+
+    /**
+     * @return ёмкость (количество корзин) таблицы
+     */
+    public int getCapacity() {
+<span class="nc" id="L242">        return capacity;</span>
+    }
+
+    /**
+     * Проверяет, содержит ли таблица указанный ключ.
+     */
+    public boolean containsKey(int key) {
+<span class="fc bfc" id="L249" title="All 2 branches covered.">        return search(key) != null;</span>
+    }
+
+    /**
+     * Возвращает количество элементов в корзине по индексу.
+     *
+     * @param index индекс корзины
+     * @return количество элементов в цепочке
+     */
+    public int getBucketSize(int index) {
+<span class="fc bfc" id="L259" title="All 4 branches covered.">        if (index &lt; 0 || index &gt;= capacity) {</span>
+<span class="fc" id="L260">            throw new IndexOutOfBoundsException(&quot;Индекс корзины вне диапазона: &quot; + index);</span>
+        }
+<span class="fc bfc" id="L262" title="All 2 branches covered.">        return table[index] == null ? 0 : table[index].size();</span>
+    }
+
+    /**
+     * Очищает хеш-таблицу.
+     */
+    public void clear() {
+<span class="fc bfc" id="L269" title="All 2 branches covered.">        for (int i = 0; i &lt; capacity; i++) {</span>
+<span class="fc" id="L270">            table[i] = null;</span>
+        }
+<span class="fc" id="L272">        size = 0;</span>
+<span class="fc" id="L273">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

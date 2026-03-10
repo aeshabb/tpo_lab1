@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Scenario.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TPO Lab 1</a> &gt; <a href="index.source.html" class="el_package">ru.itmo.tpo.task3</a> &gt; <span class="el_source">Scenario.java</span></div><h1>Scenario.java</h1><pre class="source lang-java linenums">package ru.itmo.tpo.task3;
+
+/**
+ * Сценарий из &quot;Автостопом по Галактике&quot; (Дуглас Адамс):
+ *
+ * &quot;В тот самый момент, когда Артур произнёс 'А у меня, кажется, большие проблемы
+ * с образом жизни', в ткани пространства-времени открылась случайная дыра и
+ * перенесла его слова далеко-далеко во времени через почти бескрайние просторы
+ * космоса в далёкую галактику, где странные воинственные существа балансировали
+ * на грани ужасной межзвёздной войны.&quot;
+ *
+ * Этот класс объединяет все элементы доменной модели и позволяет
+ * выполнить описанный сценарий.
+ */
+public class Scenario {
+    private final Person arthur;
+    private final SpaceTimeFabric spaceTimeFabric;
+    private final Cosmos cosmos;
+    private final Galaxy distantGalaxy;
+    private final InterstellarWar war;
+
+    private Words spokenWords;
+    private boolean scenarioExecuted;
+
+<span class="fc" id="L25">    public Scenario() {</span>
+        // Инициализация всех элементов сценария
+<span class="fc" id="L27">        this.arthur = new Person(&quot;Артур&quot;);</span>
+<span class="fc" id="L28">        this.arthur.setLifeStyle(new LifeStyle(LifeStyle.Quality.PROBLEMATIC));</span>
+
+<span class="fc" id="L30">        this.spaceTimeFabric = new SpaceTimeFabric();</span>
+<span class="fc" id="L31">        this.cosmos = new Cosmos();</span>
+
+<span class="fc" id="L33">        this.distantGalaxy = new Galaxy(&quot;Далёкая галактика&quot;, true);</span>
+<span class="fc" id="L34">        this.war = new InterstellarWar(&quot;ужасная межзвёздная война&quot;);</span>
+
+        // Населяем галактику странными воинственными существами
+<span class="fc" id="L37">        WarlikeCreature creature1 = new WarlikeCreature(&quot;Неизвестный вид А&quot;);</span>
+<span class="fc" id="L38">        WarlikeCreature creature2 = new WarlikeCreature(&quot;Неизвестный вид Б&quot;);</span>
+<span class="fc" id="L39">        distantGalaxy.addInhabitant(creature1);</span>
+<span class="fc" id="L40">        distantGalaxy.addInhabitant(creature2);</span>
+<span class="fc" id="L41">        distantGalaxy.setPendingWar(war);</span>
+
+<span class="fc" id="L43">        this.scenarioExecuted = false;</span>
+<span class="fc" id="L44">    }</span>
+
+    /**
+     * Выполняет весь сценарий:
+     * 1. Артур произносит фразу
+     * 2. В ткани пространства-времени открывается дыра
+     * 3. Слова переносятся через космос в далёкую галактику
+     *
+     * @return слова Артура, перенесённые в далёкую галактику
+     */
+    public Words execute() {
+        // 1. Артур произносит фразу
+<span class="fc" id="L56">        spokenWords = arthur.sayPhrase(</span>
+                &quot;А у меня, кажется, большие проблемы с образом жизни&quot;);
+
+        // 2. В ткани пространства-времени открывается случайная дыра
+<span class="fc" id="L60">        SpaceTimeHole hole = spaceTimeFabric.openRandomHole(distantGalaxy);</span>
+
+        // 3. Дыра переносит слова далеко-далеко во времени через космос
+<span class="fc" id="L63">        hole.transport(spokenWords);</span>
+
+        // 4. Дыра закрывается
+<span class="fc" id="L66">        spaceTimeFabric.closeHole();</span>
+
+<span class="fc" id="L68">        this.scenarioExecuted = true;</span>
+<span class="fc" id="L69">        return spokenWords;</span>
+    }
+
+    // Геттеры для доступа к элементам сценария
+
+    public Person getArthur() {
+<span class="fc" id="L75">        return arthur;</span>
+    }
+
+    public SpaceTimeFabric getSpaceTimeFabric() {
+<span class="fc" id="L79">        return spaceTimeFabric;</span>
+    }
+
+    public Cosmos getCosmos() {
+<span class="fc" id="L83">        return cosmos;</span>
+    }
+
+    public Galaxy getDistantGalaxy() {
+<span class="fc" id="L87">        return distantGalaxy;</span>
+    }
+
+    public InterstellarWar getWar() {
+<span class="fc" id="L91">        return war;</span>
+    }
+
+    public Words getSpokenWords() {
+<span class="fc" id="L95">        return spokenWords;</span>
+    }
+
+    public boolean isScenarioExecuted() {
+<span class="fc" id="L99">        return scenarioExecuted;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
