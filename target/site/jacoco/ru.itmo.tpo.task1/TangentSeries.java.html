@@ -13,69 +13,69 @@
     private static final double UNDEFINED_EPSILON = 1e-10;
 
     public static double compute(double x, int terms) {
-<span class="nc bnc" id="L16" title="All 4 branches missed.">        if (terms &lt; 1 || terms &gt; MAX_TERMS) {</span>
+<span class="pc bpc" id="L16" title="2 of 4 branches missed.">        if (terms &lt; 1 || terms &gt; MAX_TERMS) {</span>
 <span class="nc" id="L17">            throw new IllegalArgumentException(</span>
 <span class="nc" id="L18">                    &quot;Количество членов ряда должно быть от 1 до &quot; + MAX_TERMS);</span>
         }
 
-<span class="nc bnc" id="L21" title="All 2 branches missed.">        if (!Double.isFinite(x)) {</span>
+<span class="pc bpc" id="L21" title="1 of 2 branches missed.">        if (!Double.isFinite(x)) {</span>
 <span class="nc" id="L22">            throw new IllegalArgumentException(&quot;x должен быть конечным числом&quot;);</span>
         }
 
-<span class="nc" id="L25">        double normalized = normalizeAngle(x);</span>
+<span class="fc" id="L25">        double normalized = normalizeAngle(x);</span>
 
-<span class="nc bnc" id="L27" title="All 2 branches missed.">        if (Math.abs(normalized) &gt;= Math.PI / 2 - UNDEFINED_EPSILON) {</span>
+<span class="pc bpc" id="L27" title="1 of 2 branches missed.">        if (Math.abs(normalized) &gt;= Math.PI / 2 - UNDEFINED_EPSILON) {</span>
 <span class="nc" id="L28">            throw new ArithmeticException(</span>
 <span class="nc" id="L29">                    &quot;Значение x слишком близко к π/2 + πn, tg(x) не определён&quot;);</span>
         }
 
-<span class="nc" id="L32">        double sine = sineSeries(normalized, terms);</span>
-<span class="nc" id="L33">        double cosine = cosineSeries(normalized, terms);</span>
+<span class="fc" id="L32">        double sine = sineSeries(normalized, terms);</span>
+<span class="fc" id="L33">        double cosine = cosineSeries(normalized, terms);</span>
 
-<span class="nc bnc" id="L35" title="All 2 branches missed.">        if (Math.abs(cosine) &lt; UNDEFINED_EPSILON) {</span>
+<span class="pc bpc" id="L35" title="1 of 2 branches missed.">        if (Math.abs(cosine) &lt; UNDEFINED_EPSILON) {</span>
 <span class="nc" id="L36">            throw new ArithmeticException(</span>
 <span class="nc" id="L37">                    &quot;Значение x слишком близко к π/2 + πn, tg(x) не определён&quot;);</span>
         }
 
-<span class="nc" id="L40">        return sine / cosine;</span>
+<span class="fc" id="L40">        return sine / cosine;</span>
     }
 
     public static double compute(double x) {
-<span class="nc" id="L44">        return compute(x, MAX_TERMS);</span>
+<span class="fc" id="L44">        return compute(x, MAX_TERMS);</span>
     }
 
     private static double sineSeries(double x, int terms) {
-<span class="nc" id="L48">        double sum = 0.0;</span>
-<span class="nc" id="L49">        double term = x;</span>
+<span class="fc" id="L48">        double sum = 0.0;</span>
+<span class="fc" id="L49">        double term = x;</span>
 
-<span class="nc bnc" id="L51" title="All 2 branches missed.">        for (int n = 0; n &lt; terms; n++) {</span>
-<span class="nc" id="L52">            sum += term;</span>
-<span class="nc" id="L53">            term *= -x * x / ((2.0 * n + 2.0) * (2.0 * n + 3.0));</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">        for (int n = 0; n &lt; terms; n++) {</span>
+<span class="fc" id="L52">            sum += term;</span>
+<span class="fc" id="L53">            term *= -x * x / ((2.0 * n + 2.0) * (2.0 * n + 3.0));</span>
         }
 
-<span class="nc" id="L56">        return sum;</span>
+<span class="fc" id="L56">        return sum;</span>
     }
 
     private static double cosineSeries(double x, int terms) {
-<span class="nc" id="L60">        double sum = 0.0;</span>
-<span class="nc" id="L61">        double term = 1.0;</span>
+<span class="fc" id="L60">        double sum = 0.0;</span>
+<span class="fc" id="L61">        double term = 1.0;</span>
 
-<span class="nc bnc" id="L63" title="All 2 branches missed.">        for (int n = 0; n &lt; terms; n++) {</span>
-<span class="nc" id="L64">            sum += term;</span>
-<span class="nc" id="L65">            term *= -x * x / ((2.0 * n + 1.0) * (2.0 * n + 2.0));</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        for (int n = 0; n &lt; terms; n++) {</span>
+<span class="fc" id="L64">            sum += term;</span>
+<span class="fc" id="L65">            term *= -x * x / ((2.0 * n + 1.0) * (2.0 * n + 2.0));</span>
         }
 
-<span class="nc" id="L68">        return sum;</span>
+<span class="fc" id="L68">        return sum;</span>
     }
 
     static double normalizeAngle(double x) {
-<span class="nc" id="L72">        double result = x % Math.PI;</span>
-<span class="nc bnc" id="L73" title="All 2 branches missed.">        if (result &gt; Math.PI / 2) {</span>
-<span class="nc" id="L74">            result -= Math.PI;</span>
-<span class="nc bnc" id="L75" title="All 2 branches missed.">        } else if (result &lt; -Math.PI / 2) {</span>
-<span class="nc" id="L76">            result += Math.PI;</span>
+<span class="fc" id="L72">        double result = x % Math.PI;</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if (result &gt; Math.PI / 2) {</span>
+<span class="fc" id="L74">            result -= Math.PI;</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">        } else if (result &lt; -Math.PI / 2) {</span>
+<span class="fc" id="L76">            result += Math.PI;</span>
         }
-<span class="nc" id="L78">        return result;</span>
+<span class="fc" id="L78">        return result;</span>
     }
 
     /**

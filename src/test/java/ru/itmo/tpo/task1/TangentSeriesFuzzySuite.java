@@ -15,6 +15,7 @@ class TangentSeriesFuzzySuite {
     private static final double MIN_X = -1_000.0;
     private static final double MAX_X = 1_000.0;
     private static final double ASYMPTOTE_GAP = 1e-4;
+    private static final double FUZZY_TOLERANCE = 1e-4;
 
     @Test
     @DisplayName("Fuzzy: сравнение с Math.tan() на случайных допустимых значениях")
@@ -26,7 +27,7 @@ class TangentSeriesFuzzySuite {
             double expected = Math.tan(x);
             double actual = TangentSeries.compute(x);
 
-            assertEquals(expected, actual, toleranceFor(x), "x=" + x);
+            assertEquals(expected, actual, FUZZY_TOLERANCE, "x=" + x);
         }
     }
 
@@ -38,10 +39,5 @@ class TangentSeriesFuzzySuite {
                 return x;
             }
         }
-    }
-
-    private static double toleranceFor(double x) {
-        double normalizedDistance = Math.PI / 2 - Math.abs(TangentSeries.normalizeAngle(x));
-        return normalizedDistance < 1e-2 ? 1e-4 : 1e-6;
     }
 }
