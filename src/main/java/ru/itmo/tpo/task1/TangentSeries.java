@@ -1,69 +1,70 @@
 package ru.itmo.tpo.task1;
 
 /**
- * Вычисление tg(x) через разложение в степенной ряд (ряд Тейлора).
+ * Вычисление tg(x) как отношения рядов Тейлора для sin(x) и cos(x).
  *
- * tg(x) = Σ (от n=1 до ∞) [ B_{2n} * (-4)^n * (1 - 4^n) / (2n)! ] * x^{2n-1}
+ * sin(x) = x - x^3/3! + x^5/5! - ...
+ * cos(x) = 1 - x^2/2! + x^4/4! - ...
+ * tg(x) = sin(x) / cos(x)
  *
- * Где B_{2n} — числа Бернулли.
- *
- * Используем известное разложение:
- * tan(x) = x + x^3/3 + 2x^5/15 + 17x^7/315 + 62x^9/2835 + ...
- *
- * Коэффициенты вычисляются через числа Бернулли.
- * Ряд сходится при |x| < π/2.
+ * Ряды sin(x) и cos(x) вычисляются после нормализации угла к интервалу (-π/2, π/2).
  */
 public class TangentSeries {
 
-    /**
-     * Предвычисленные коэффициенты разложения tg(x) в ряд Тейлора.
-     * tan(x) = sum_{n=0}^{N} coefficients[n] * x^(2n+1)
-     *
-     * Коэффициенты: 1, 1/3, 2/15, 17/315, 62/2835, 1382/155925,
-     *               21844/6081075, 929569/638512875, ...
-     */
-    private static final double[] COEFFICIENTS = {
-            1.0,                        // x
-            1.0 / 3.0,                  // x^3 / 3
-            2.0 / 15.0,                 // 2x^5 / 15
-            17.0 / 315.0,              // 17x^7 / 315
-            62.0 / 2835.0,             // 62x^9 / 2835
-            1382.0 / 155925.0,         // 1382x^11 / 155925
-            21844.0 / 6081075.0,       // 21844x^13 / 6081075
-            929569.0 / 638512875.0,    // 929569x^15 / 638512875
-            6404582.0 / 10854718875.0, // x^17
-            443861162.0 / 1856156927625.0,  // x^19
-            18888466084.0 / 194896477400625.0, // x^21
-    };
+    private static final int MAX_TERMS = 20;
+    private static final double UNDEFINED_EPSILON = 1e-10;
 
     public static double compute(double x, int terms) {
-        if (terms < 1 || terms > COEFFICIENTS.length) {
+        if (terms < 1 || terms > MAX_TERMS) {
             throw new IllegalArgumentException(
-                    "Количество членов ряда должно быть от 1 до " + COEFFICIENTS.length);
+                    "Количество членов ряда должно быть от 1 до " + MAX_TERMS);
         }
 
         double normalized = normalizeAngle(x);
 
-        if (Math.abs(normalized) >= Math.PI / 2 - 1e-10) {
+        if (Math.abs(normalized) >= Math.PI / 2 - UNDEFINED_EPSILON) {
             throw new ArithmeticException(
                     "Значение x слишком близко к π/2 + πn, tg(x) не определён");
         }
 
-        double result = 0.0;
-        double xPow = normalized; // x^(2n+1), начинаем с x^1
+        double sine = sineSeries(normalized, terms);
+        double cosine = cosineSeries(normalized, terms);
 
-        for (int n = 0; n < terms; n++) {
-            result += COEFFICIENTS[n] * xPow;
-            xPow *= normalized * normalized;
+        if (Math.abs(cosine) < UNDEFINED_EPSILON) {
+            throw new ArithmeticException(
+                    "Значение x слишком близко к π/2 + πn, tg(x) не определён");
         }
 
-        return result;
+        return sine / cosine;
     }
 
     public static double compute(double x) {
-        return compute(x, COEFFICIENTS.length);
+        return compute(x, MAX_TERMS);
     }
 
+    private static double sineSeries(double x, int terms) {
+        double sum = 0.0;
+        double term = x;
+
+        for (int n = 0; n < terms; n++) {
+            sum += term;
+            term *= -x * x / ((2.0 * n + 2.0) * (2.0 * n + 3.0));
+        }
+
+        return sum;
+    }
+
+    private static double cosineSeries(double x, int terms) {
+        double sum = 0.0;
+        double term = 1.0;
+
+        for (int n = 0; n < terms; n++) {
+            sum += term;
+            term *= -x * x / ((2.0 * n + 1.0) * (2.0 * n + 2.0));
+        }
+
+        return sum;
+    }
 
     static double normalizeAngle(double x) {
         double result = x % Math.PI;
@@ -79,6 +80,6 @@ public class TangentSeries {
      * Возвращает максимальное количество доступных членов ряда.
      */
     public static int getMaxTerms() {
-        return COEFFICIENTS.length;
+        return MAX_TERMS;
     }
 }

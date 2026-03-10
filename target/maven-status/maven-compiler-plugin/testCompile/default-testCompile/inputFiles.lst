@@ -1,3 +1,4 @@
-/home/aeshabb/ITMO/tpo/lab1/src/test/java/ru/itmo/tpo/task3/DomainModelTest.java
-/home/aeshabb/ITMO/tpo/lab1/src/test/java/ru/itmo/tpo/task1/TangentSeriesTest.java
-/home/aeshabb/ITMO/tpo/lab1/src/test/java/ru/itmo/tpo/task2/HashTableTest.java
+/Users/skadibtw/tpo_lab1/src/test/java/ru/itmo/tpo/task1/TangentSeriesFuzzySuite.java
+/Users/skadibtw/tpo_lab1/src/test/java/ru/itmo/tpo/task1/TangentSeriesTest.java
+/Users/skadibtw/tpo_lab1/src/test/java/ru/itmo/tpo/task2/HashTableTest.java
+/Users/skadibtw/tpo_lab1/src/test/java/ru/itmo/tpo/task3/DomainModelTest.java

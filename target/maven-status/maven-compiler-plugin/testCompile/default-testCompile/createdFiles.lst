@@ -4,8 +4,8 @@ ru/itmo/tpo/task2/HashTableTest$BoundaryTest.class
 ru/itmo/tpo/task3/DomainModelTest$SpaceTimeHoleTest.class
 ru/itmo/tpo/task3/DomainModelTest$InterstellarWarTest.class
 ru/itmo/tpo/task2/HashTableTest$ComplexTraceTest.class
-ru/itmo/tpo/task1/TangentSeriesTest$CharacteristicPointsTest.class
 ru/itmo/tpo/task1/TangentSeriesTest$ConvergenceTest.class
+ru/itmo/tpo/task1/TangentSeriesTest$CharacteristicPointsTest.class
 ru/itmo/tpo/task2/HashTableTest$HashFunctionTest.class
 ru/itmo/tpo/task3/DomainModelTest$CosmosTest.class
 ru/itmo/tpo/task2/HashTableTest$DeleteTest.class
@@ -23,5 +23,5 @@ ru/itmo/tpo/task3/DomainModelTest$SpaceTimeFabricTest.class
 ru/itmo/tpo/task1/TangentSeriesTest$BoundaryAndErrorTest.class
 ru/itmo/tpo/task2/HashTableTest$SearchTraceTest.class
 ru/itmo/tpo/task1/TangentSeriesTest$FunctionPropertiesTest.class
-ru/itmo/tpo/task1/TangentSeriesTest$PeriodicityTest.class
 ru/itmo/tpo/task1/TangentSeriesTest.class
+ru/itmo/tpo/task1/TangentSeriesTest$PeriodicityTest.class

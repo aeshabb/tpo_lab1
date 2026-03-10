@@ -10,21 +10,22 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Модульные тесты для разложения tg(x) в степенной ряд.
+ * Модульные тесты для вычисления tg(x) через ряды Тейлора sin(x) и cos(x).
  *
  * Тестовое покрытие:
  * 1. Точные значения в характерных точках (0, π/4, π/6, π/3, и т.д.)
  * 2. Отрицательные значения (проверка нечётности функции)
- * 3. Граничные значения (близко к ±π/2)
+ * 3. Граничные значения (около 0 и близко к ±π/2)
  * 4. Сходимость ряда (увеличение количества членов)
  * 5. Обработка ошибок (невалидные параметры)
  * 6. Периодичность функции
  */
-@DisplayName("Тесты tg(x) через степенной ряд")
+@DisplayName("Тесты tg(x) через ряды Тейлора sin(x) и cos(x)")
 class TangentSeriesTest {
 
     private static final double EPSILON = 1e-6;
     private static final double COARSE_EPSILON = 1e-3;
+    private static final double NEAR_ASYMPTOTE_DELTA = 1e-3;
 
     @Nested
     @DisplayName("Значения в характерных точках")
@@ -77,7 +78,13 @@ class TangentSeriesTest {
         @Test
         @DisplayName("tg(x) — нечётная функция: tg(-x) = -tg(x)")
         void testOddFunction() {
-            double[] testValues = {0.1, 0.3, 0.5, 0.7, 1.0, 1.2};
+            double[] testValues = {
+                    1e-6,
+                    Math.PI / 12,
+                    Math.PI / 6,
+                    Math.PI / 4,
+                    Math.PI / 2 - NEAR_ASYMPTOTE_DELTA
+            };
             for (double x : testValues) {
                 double tanPositive = TangentSeries.compute(x);
                 double tanNegative = TangentSeries.compute(-x);
@@ -88,9 +95,8 @@ class TangentSeriesTest {
 
         @ParameterizedTest
         @DisplayName("Малые значения: tg(x) ≈ x при x → 0")
-        @ValueSource(doubles = {0.001, 0.01, 0.05, 0.1})
+        @ValueSource(doubles = {1e-6, 1e-4, 1e-2})
         void testSmallValues(double x) {
-            // При малых x, tg(x) ≈ x (первый член ряда)
             double result = TangentSeries.compute(x, 1);
             assertEquals(x, result, 1e-3,
                     "При малых x, tg(x) ≈ x (линейное приближение)");
@@ -104,7 +110,7 @@ class TangentSeriesTest {
         @Test
         @DisplayName("Увеличение количества членов повышает точность")
         void testConvergenceWithMoreTerms() {
-            double x = 0.5;
+            double x = Math.PI / 6;
             double expected = Math.tan(x);
             double prevError = Double.MAX_VALUE;
 
@@ -121,7 +127,7 @@ class TangentSeriesTest {
         @Test
         @DisplayName("Один член ряда: tg(x) ≈ x")
         void testOneTermApproximation() {
-            double x = 0.3;
+            double x = Math.PI / 12;
             double result = TangentSeries.compute(x, 1);
             assertEquals(x, result, 1e-10, "С одним членом ряда tg(x) ≈ x");
         }
@@ -129,33 +135,34 @@ class TangentSeriesTest {
         @Test
         @DisplayName("Два члена ряда: tg(x) ≈ x + x³/3")
         void testTwoTermApproximation() {
-            double x = 0.3;
-            double expected = x + Math.pow(x, 3) / 3.0;
+            double x = Math.PI / 12;
+            double expected = (x - Math.pow(x, 3) / 6.0) / (1.0 - Math.pow(x, 2) / 2.0);
             double result = TangentSeries.compute(x, 2);
             assertEquals(expected, result, 1e-10);
         }
 
         @Test
-        @DisplayName("Три члена ряда: tg(x) ≈ x + x³/3 + 2x⁵/15")
+        @DisplayName("Три члена ряда: tg(x) как отношение полиномов sin/cos")
         void testThreeTermApproximation() {
-            double x = 0.3;
-            double expected = x + Math.pow(x, 3) / 3.0 + 2.0 * Math.pow(x, 5) / 15.0;
+            double x = Math.PI / 12;
+            double expected = (x - Math.pow(x, 3) / 6.0 + Math.pow(x, 5) / 120.0)
+                    / (1.0 - Math.pow(x, 2) / 2.0 + Math.pow(x, 4) / 24.0);
             double result = TangentSeries.compute(x, 3);
             assertEquals(expected, result, 1e-10);
         }
 
         @ParameterizedTest
-        @DisplayName("Сравнение с Math.tan() при разных x")
+        @DisplayName("Сравнение с Math.tan() в характерных и приграничных точках")
         @CsvSource({
                 "0.0,    1e-10",
-                "0.1,    1e-6",
-                "0.3,    1e-5",
-                "0.5,    1e-4",
-                "0.7,    1e-3",
-                "1.0,    1e-2",
-                "-0.1,   1e-6",
-                "-0.5,   1e-4",
-                "-1.0,   1e-2"
+                "0.2617993877991494,    1e-10",
+                "0.5235987755982988,    1e-10",
+                "0.7853981633974483,    1e-8",
+                "1.0471975511965976,    1e-6",
+                "1.5697963267948967,    1e-2",
+                "-0.5235987755982988,   1e-10",
+                "-0.7853981633974483,   1e-8",
+                "-1.5697963267948967,   1e-2"
         })
         void testAgainstMathTan(double x, double tolerance) {
             double expected = Math.tan(x);
@@ -191,6 +198,13 @@ class TangentSeriesTest {
         }
 
         @Test
+        @DisplayName("Значение, близкое к π/2, ещё вычисляется")
+        void testNearPiOver2StillComputes() {
+            double x = Math.PI / 2 - NEAR_ASYMPTOTE_DELTA;
+            assertEquals(Math.tan(x), TangentSeries.compute(x), 1e-2);
+        }
+
+        @Test
         @DisplayName("Исключение при невалидном количестве членов (0)")
         void testZeroTermsThrowsException() {
             assertThrows(IllegalArgumentException.class,
@@ -219,7 +233,7 @@ class TangentSeriesTest {
         @Test
         @DisplayName("tg(x + π) = tg(x) — периодичность")
         void testPeriodicity() {
-            double x = 0.5;
+            double x = Math.PI / 6;
             double result1 = TangentSeries.compute(x);
             double result2 = TangentSeries.compute(x + Math.PI);
             assertEquals(result1, result2, COARSE_EPSILON,
@@ -229,7 +243,7 @@ class TangentSeriesTest {
         @Test
         @DisplayName("tg(x + 2π) = tg(x)")
         void testPeriodicity2Pi() {
-            double x = 0.3;
+            double x = Math.PI / 4;
             double result1 = TangentSeries.compute(x);
             double result2 = TangentSeries.compute(x + 2 * Math.PI);
             assertEquals(result1, result2, COARSE_EPSILON);
@@ -238,16 +252,16 @@ class TangentSeriesTest {
         @Test
         @DisplayName("Нормализация большого положительного угла")
         void testLargePositiveAngle() {
-            double x = 0.3 + 10 * Math.PI;
-            double expected = Math.tan(0.3);
+            double x = Math.PI / 6 + 10 * Math.PI;
+            double expected = Math.tan(Math.PI / 6);
             assertEquals(expected, TangentSeries.compute(x), COARSE_EPSILON);
         }
 
         @Test
         @DisplayName("Нормализация большого отрицательного угла")
         void testLargeNegativeAngle() {
-            double x = -0.3 - 10 * Math.PI;
-            double expected = Math.tan(-0.3);
+            double x = -Math.PI / 6 - 10 * Math.PI;
+            double expected = Math.tan(-Math.PI / 6);
             assertEquals(expected, TangentSeries.compute(x), COARSE_EPSILON);
         }
     }
