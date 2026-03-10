@@ -30,8 +30,6 @@ public class Words {
 
     /**
      * Переносит слова в указанную галактику через дыру в пространстве-времени.
-     *
-     * @param destination целевая галактика
      */
     public void transportTo(Galaxy destination) {
         this.transported = true;

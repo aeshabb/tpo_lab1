@@ -36,22 +36,12 @@ public class TangentSeries {
             18888466084.0 / 194896477400625.0, // x^21
     };
 
-    /**
-     * Вычисляет tan(x) с помощью разложения в степенной ряд.
-     *
-     * @param x     аргумент в радианах, |x| < π/2
-     * @param terms количество членов ряда (от 1 до 11)
-     * @return приближённое значение tg(x)
-     * @throws ArithmeticException если x вне области сходимости
-     * @throws IllegalArgumentException если terms < 1 или terms > 11
-     */
     public static double compute(double x, int terms) {
         if (terms < 1 || terms > COEFFICIENTS.length) {
             throw new IllegalArgumentException(
                     "Количество членов ряда должно быть от 1 до " + COEFFICIENTS.length);
         }
 
-        // Приведение x к диапазону (-π/2, π/2) с учётом периодичности
         double normalized = normalizeAngle(x);
 
         if (Math.abs(normalized) >= Math.PI / 2 - 1e-10) {
@@ -64,29 +54,17 @@ public class TangentSeries {
 
         for (int n = 0; n < terms; n++) {
             result += COEFFICIENTS[n] * xPow;
-            xPow *= normalized * normalized; // x^(2n+1) -> x^(2(n+1)+1)
+            xPow *= normalized * normalized;
         }
 
         return result;
     }
 
-    /**
-     * Вычисляет tan(x) с максимальным количеством членов ряда.
-     *
-     * @param x аргумент в радианах
-     * @return приближённое значение tg(x)
-     */
     public static double compute(double x) {
         return compute(x, COEFFICIENTS.length);
     }
 
-    /**
-     * Нормализует угол к диапазону (-π/2, π/2) с учётом периодичности tg.
-     * Период tg(x) = π.
-     *
-     * @param x угол в радианах
-     * @return нормализованный угол в диапазоне (-π/2, π/2)
-     */
+
     static double normalizeAngle(double x) {
         double result = x % Math.PI;
         if (result > Math.PI / 2) {

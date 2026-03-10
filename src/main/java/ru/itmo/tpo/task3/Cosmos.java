@@ -5,7 +5,7 @@ package ru.itmo.tpo.task3;
  * Слова Артура путешествуют через космос.
  */
 public class Cosmos {
-    private final boolean almostBoundless; // почти бескрайний
+    private final boolean almostBoundless;
 
     public Cosmos() {
         this.almostBoundless = true;

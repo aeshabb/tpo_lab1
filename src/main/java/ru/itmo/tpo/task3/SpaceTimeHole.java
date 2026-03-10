@@ -23,9 +23,6 @@ public class SpaceTimeHole {
 
     /**
      * Переносит слова через дыру к месту назначения — далёкой галактике.
-     *
-     * @param words слова, которые нужно перенести
-     * @throws IllegalStateException если дыра закрыта
      */
     public void transport(Words words) {
         if (!open) {

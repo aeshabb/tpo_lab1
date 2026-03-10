@@ -6,15 +6,15 @@ package ru.itmo.tpo.task3;
  */
 public class WarlikeCreature {
     private final String species;
-    private boolean strange;  // странное
-    private boolean warlike;  // воинственное
+    private boolean strange;
+    private boolean warlike;
     private WarReadiness warReadiness;
 
     public enum WarReadiness {
-        PEACEFUL,           // мирное
-        TENSE,              // напряжённое
-        ON_BRINK_OF_WAR,    // на грани войны
-        AT_WAR              // в состоянии войны
+        PEACEFUL,
+        TENSE,
+        ON_BRINK_OF_WAR,
+        AT_WAR
     }
 
     public WarlikeCreature(String species) {

@@ -13,10 +13,7 @@ public class SpaceTimeFabric {
     private SpaceTimeHole currentHole;
 
     /**
-     * Открывает случайную дыру в ткани пространства-времени.
-     *
-     * @param destination галактика назначения
-     * @return открывшаяся дыра
+     * Открывает случайную дыру в ткани пространства-времени
      */
     public SpaceTimeHole openRandomHole(Galaxy destination) {
         this.currentHole = new SpaceTimeHole(destination);

@@ -25,9 +25,6 @@ public class Person {
     /**
      * Произносит фразу. Это событие может спровоцировать открытие дыры
      * в пространстве-времени.
-     *
-     * @param phrase фраза, которую произносит персонаж
-     * @return произнесённые слова
      */
     public Words sayPhrase(String phrase) {
         this.currentPhrase = phrase;

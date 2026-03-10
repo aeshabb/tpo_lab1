@@ -2,19 +2,8 @@ package ru.itmo.tpo.task2;
 
 import java.util.LinkedList;
 
-/**
- * Хеш-таблица с закрытой адресацией (метод цепочек / open hashing).
- * Каждый слот таблицы содержит связанный список элементов.
- *
- * Поддерживает операции: вставка (insert), поиск (search), удаление (delete).
- *
- * Визуализация: https://www.cs.usfca.edu/~galles/visualization/OpenHash.html
- */
 public class HashTable {
 
-    /**
-     * Запись хеш-таблицы: ключ-значение.
-     */
     public static class Entry {
         private final int key;
         private int value;
@@ -42,7 +31,6 @@ public class HashTable {
         }
     }
 
-    // Характерные точки алгоритма (для тестирования прохождения)
     public enum TracePoint {
         HASH_COMPUTED,           // A: Хеш вычислен
         BUCKET_EMPTY,            // B: Корзина пуста
@@ -55,9 +43,6 @@ public class HashTable {
         SEARCH_RESULT_RETURNED   // I: Результат поиска возвращён
     }
 
-    /**
-     * Интерфейс для отслеживания прохождения характерных точек.
-     */
     public interface TraceListener {
         void onTracePoint(TracePoint point);
     }
@@ -67,13 +52,7 @@ public class HashTable {
     private int size;
     private TraceListener traceListener;
 
-    /**
-     * Создаёт хеш-таблицу с указанной ёмкостью.
-     *
-     * @param capacity количество корзин (buckets)
-     * @throws IllegalArgumentException если capacity <= 0
-     */
-    @SuppressWarnings("unchecked")
+
     public HashTable(int capacity) {
         if (capacity <= 0) {
             throw new IllegalArgumentException("Ёмкость должна быть положительной: " + capacity);
@@ -98,10 +77,6 @@ public class HashTable {
 
     /**
      * Вычисляет хеш для ключа.
-     * hash(key) = key mod capacity
-     *
-     * @param key ключ
-     * @return индекс корзины
      */
     int hash(int key) {
         return Math.floorMod(key, capacity);
@@ -117,9 +92,6 @@ public class HashTable {
      *    Иначе → искать ключ в цепочке            [BUCKET_NOT_EMPTY]
      * 3. Если ключ найден → обновить значение     [KEY_FOUND, ENTRY_UPDATED]
      *    Если не найден → добавить в конец         [KEY_NOT_FOUND, ENTRY_INSERTED]
-     *
-     * @param key   ключ
-     * @param value значение
      */
     public void insert(int key, int value) {
         int index = hash(key);
@@ -157,9 +129,6 @@ public class HashTable {
      *    Иначе → искать ключ в цепочке            [BUCKET_NOT_EMPTY]
      * 3. Если найден → вернуть значение           [KEY_FOUND, SEARCH_RESULT_RETURNED]
      *    Если не найден → вернуть null             [KEY_NOT_FOUND, SEARCH_RESULT_RETURNED]
-     *
-     * @param key ключ для поиска
-     * @return значение или null, если ключ не найден
      */
     public Integer search(int key) {
         int index = hash(key);
@@ -194,9 +163,6 @@ public class HashTable {
      *    Иначе → искать ключ в цепочке            [BUCKET_NOT_EMPTY]
      * 3. Если найден → удалить элемент            [KEY_FOUND, ENTRY_DELETED]
      *    Если не найден → ничего не делать         [KEY_NOT_FOUND]
-     *
-     * @param key ключ для удаления
-     * @return true если элемент был удалён, false если не найден
      */
     public boolean delete(int key) {
         int index = hash(key);
@@ -228,33 +194,19 @@ public class HashTable {
         return false;
     }
 
-    /**
-     * @return текущее количество элементов в таблице
-     */
     public int getSize() {
         return size;
     }
 
-    /**
-     * @return ёмкость (количество корзин) таблицы
-     */
     public int getCapacity() {
         return capacity;
     }
 
-    /**
-     * Проверяет, содержит ли таблица указанный ключ.
-     */
     public boolean containsKey(int key) {
         return search(key) != null;
     }
 
-    /**
-     * Возвращает количество элементов в корзине по индексу.
-     *
-     * @param index индекс корзины
-     * @return количество элементов в цепочке
-     */
+
     public int getBucketSize(int index) {
         if (index < 0 || index >= capacity) {
             throw new IndexOutOfBoundsException("Индекс корзины вне диапазона: " + index);
@@ -262,9 +214,7 @@ public class HashTable {
         return table[index] == null ? 0 : table[index].size();
     }
 
-    /**
-     * Очищает хеш-таблицу.
-     */
+
     public void clear() {
         for (int i = 0; i < capacity; i++) {
             table[i] = null;
