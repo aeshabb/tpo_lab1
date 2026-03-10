@@ -13,32 +13,29 @@
     private SpaceTimeHole currentHole;
 
     /**
-     * Открывает случайную дыру в ткани пространства-времени.
-     *
-     * @param destination галактика назначения
-     * @return открывшаяся дыра
+     * Открывает случайную дыру в ткани пространства-времени
      */
     public SpaceTimeHole openRandomHole(Galaxy destination) {
-<span class="fc" id="L22">        this.currentHole = new SpaceTimeHole(destination);</span>
-<span class="fc" id="L23">        return currentHole;</span>
+<span class="fc" id="L19">        this.currentHole = new SpaceTimeHole(destination);</span>
+<span class="fc" id="L20">        return currentHole;</span>
     }
 
     /**
      * Закрывает текущую дыру.
      */
     public void closeHole() {
-<span class="fc bfc" id="L30" title="All 2 branches covered.">        if (currentHole != null) {</span>
-<span class="fc" id="L31">            currentHole.close();</span>
-<span class="fc" id="L32">            currentHole = null;</span>
+<span class="fc bfc" id="L27" title="All 2 branches covered.">        if (currentHole != null) {</span>
+<span class="fc" id="L28">            currentHole.close();</span>
+<span class="fc" id="L29">            currentHole = null;</span>
         }
-<span class="fc" id="L34">    }</span>
+<span class="fc" id="L31">    }</span>
 
     public boolean hasOpenHole() {
-<span class="pc bpc" id="L37" title="1 of 4 branches missed.">        return currentHole != null &amp;&amp; currentHole.isOpen();</span>
+<span class="pc bpc" id="L34" title="1 of 4 branches missed.">        return currentHole != null &amp;&amp; currentHole.isOpen();</span>
     }
 
     public SpaceTimeHole getCurrentHole() {
-<span class="fc" id="L41">        return currentHole;</span>
+<span class="fc" id="L38">        return currentHole;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -67,7 +67,7 @@ class DomainModelTest {
     }
 
     @Nested
-    @DisplayName("LifeStyle (Образ жизни)")
+    @DisplayName("LifeStyle")
     class LifeStyleTest {
 
         @Test
@@ -106,7 +106,7 @@ class DomainModelTest {
     }
 
     @Nested
-    @DisplayName("Words (Произнесённые слова)")
+    @DisplayName("Words")
     class WordsTest {
 
         @Test

@@ -6,15 +6,15 @@
  */
 public class WarlikeCreature {
     private final String species;
-    private boolean strange;  // странное
-    private boolean warlike;  // воинственное
+    private boolean strange;
+    private boolean warlike;
     private WarReadiness warReadiness;
 
 <span class="fc" id="L13">    public enum WarReadiness {</span>
-<span class="fc" id="L14">        PEACEFUL,           // мирное</span>
-<span class="fc" id="L15">        TENSE,              // напряжённое</span>
-<span class="fc" id="L16">        ON_BRINK_OF_WAR,    // на грани войны</span>
-<span class="fc" id="L17">        AT_WAR              // в состоянии войны</span>
+<span class="fc" id="L14">        PEACEFUL,</span>
+<span class="fc" id="L15">        TENSE,</span>
+<span class="fc" id="L16">        ON_BRINK_OF_WAR,</span>
+<span class="fc" id="L17">        AT_WAR</span>
     }
 
 <span class="fc" id="L20">    public WarlikeCreature(String species) {</span>
@@ -62,7 +62,7 @@ public class WarlikeCreature {
     @Override
     public String toString() {
 <span class="nc" id="L64">        return &quot;WarlikeCreature{species='&quot; + species + &quot;', strange=&quot; + strange +</span>
-                &quot;, warlike=&quot; + warlike + &quot;, readiness=&quot; + warReadiness + &quot;}&quot;;
+<span class="nc" id="L65">                &quot;, warlike=&quot; + warlike + &quot;, readiness=&quot; + warReadiness + &quot;}&quot;;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

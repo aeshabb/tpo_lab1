@@ -55,7 +55,7 @@ public class HashTable {
 
     public HashTable(int capacity) {
         if (capacity <= 0) {
-            throw new IllegalArgumentException("Ёмкость должна быть положительной: " + capacity);
+            throw new IllegalArgumentException("Размер должна быть положительной: " + capacity);
         }
         this.capacity = capacity;
         this.table = new LinkedList[capacity];

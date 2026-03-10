@@ -25,26 +25,23 @@ public class Person {
     /**
      * Произносит фразу. Это событие может спровоцировать открытие дыры
      * в пространстве-времени.
-     *
-     * @param phrase фраза, которую произносит персонаж
-     * @return произнесённые слова
      */
     public Words sayPhrase(String phrase) {
-<span class="fc" id="L33">        this.currentPhrase = phrase;</span>
-<span class="fc" id="L34">        return new Words(phrase, this);</span>
+<span class="fc" id="L30">        this.currentPhrase = phrase;</span>
+<span class="fc" id="L31">        return new Words(phrase, this);</span>
     }
 
     public LifeStyle getLifeStyle() {
-<span class="fc" id="L38">        return lifeStyle;</span>
+<span class="fc" id="L35">        return lifeStyle;</span>
     }
 
     public void setLifeStyle(LifeStyle lifeStyle) {
-<span class="fc" id="L42">        this.lifeStyle = lifeStyle;</span>
-<span class="fc" id="L43">    }</span>
+<span class="fc" id="L39">        this.lifeStyle = lifeStyle;</span>
+<span class="fc" id="L40">    }</span>
 
     @Override
     public String toString() {
-<span class="nc" id="L47">        return &quot;Person{name='&quot; + name + &quot;'}&quot;;</span>
+<span class="nc" id="L44">        return &quot;Person{name='&quot; + name + &quot;'}&quot;;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

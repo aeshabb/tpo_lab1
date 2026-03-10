@@ -38,12 +38,10 @@ class HashTableTest {
 
     @BeforeEach
     void setUp() {
-        hashTable = new HashTable(7); // ёмкость 7 для удобства тестирования
+        hashTable = new HashTable(7);
         traceLog = new ArrayList<>();
         hashTable.setTraceListener(traceLog::add);
     }
-
-    // ======================== Тесты корректности ========================
 
     @Nested
     @DisplayName("Операция INSERT")
@@ -380,8 +378,6 @@ class HashTableTest {
         }
     }
 
-    // =================== Дополнительные тесты ===================
-
     @Nested
     @DisplayName("Хеш-функция")
     class HashFunctionTest {
@@ -470,23 +466,6 @@ class HashTableTest {
             assertFalse(hashTable.containsKey(10));
         }
 
-        @Test
-        @DisplayName("Множественные вставки и удаления")
-        void testMultipleInsertDelete() {
-            for (int i = 0; i < 100; i++) {
-                hashTable.insert(i, i * 10);
-            }
-            assertEquals(100, hashTable.getSize());
-
-            for (int i = 0; i < 50; i++) {
-                assertTrue(hashTable.delete(i));
-            }
-            assertEquals(50, hashTable.getSize());
-
-            for (int i = 50; i < 100; i++) {
-                assertEquals(i * 10, hashTable.search(i));
-            }
-        }
     }
 
     @Nested

@@ -23,85 +23,63 @@
      *               21844/6081075, 929569/638512875, ...
      */
 <span class="fc" id="L25">    private static final double[] COEFFICIENTS = {</span>
-            1.0,                        // x
-            1.0 / 3.0,                  // x^3 / 3
-            2.0 / 15.0,                 // 2x^5 / 15
-            17.0 / 315.0,              // 17x^7 / 315
-            62.0 / 2835.0,             // 62x^9 / 2835
-            1382.0 / 155925.0,         // 1382x^11 / 155925
-            21844.0 / 6081075.0,       // 21844x^13 / 6081075
-            929569.0 / 638512875.0,    // 929569x^15 / 638512875
-            6404582.0 / 10854718875.0, // x^17
-            443861162.0 / 1856156927625.0,  // x^19
-            18888466084.0 / 194896477400625.0, // x^21
-    };
+<span class="fc" id="L26">            1.0,                        // x</span>
+<span class="fc" id="L27">            1.0 / 3.0,                  // x^3 / 3</span>
+<span class="fc" id="L28">            2.0 / 15.0,                 // 2x^5 / 15</span>
+<span class="fc" id="L29">            17.0 / 315.0,              // 17x^7 / 315</span>
+<span class="fc" id="L30">            62.0 / 2835.0,             // 62x^9 / 2835</span>
+<span class="fc" id="L31">            1382.0 / 155925.0,         // 1382x^11 / 155925</span>
+<span class="fc" id="L32">            21844.0 / 6081075.0,       // 21844x^13 / 6081075</span>
+<span class="fc" id="L33">            929569.0 / 638512875.0,    // 929569x^15 / 638512875</span>
+<span class="fc" id="L34">            6404582.0 / 10854718875.0, // x^17</span>
+<span class="fc" id="L35">            443861162.0 / 1856156927625.0,  // x^19</span>
+<span class="fc" id="L36">            18888466084.0 / 194896477400625.0, // x^21</span>
+<span class="fc" id="L37">    };</span>
 
-    /**
-     * Вычисляет tan(x) с помощью разложения в степенной ряд.
-     *
-     * @param x     аргумент в радианах, |x| &lt; π/2
-     * @param terms количество членов ряда (от 1 до 11)
-     * @return приближённое значение tg(x)
-     * @throws ArithmeticException если x вне области сходимости
-     * @throws IllegalArgumentException если terms &lt; 1 или terms &gt; 11
-     */
     public static double compute(double x, int terms) {
-<span class="fc bfc" id="L49" title="All 4 branches covered.">        if (terms &lt; 1 || terms &gt; COEFFICIENTS.length) {</span>
-<span class="fc" id="L50">            throw new IllegalArgumentException(</span>
-                    &quot;Количество членов ряда должно быть от 1 до &quot; + COEFFICIENTS.length);
+<span class="fc bfc" id="L40" title="All 4 branches covered.">        if (terms &lt; 1 || terms &gt; COEFFICIENTS.length) {</span>
+<span class="fc" id="L41">            throw new IllegalArgumentException(</span>
+<span class="fc" id="L42">                    &quot;Количество членов ряда должно быть от 1 до &quot; + COEFFICIENTS.length);</span>
         }
 
-        // Приведение x к диапазону (-π/2, π/2) с учётом периодичности
-<span class="fc" id="L55">        double normalized = normalizeAngle(x);</span>
+<span class="fc" id="L45">        double normalized = normalizeAngle(x);</span>
 
-<span class="fc bfc" id="L57" title="All 2 branches covered.">        if (Math.abs(normalized) &gt;= Math.PI / 2 - 1e-10) {</span>
-<span class="fc" id="L58">            throw new ArithmeticException(</span>
-                    &quot;Значение x слишком близко к π/2 + πn, tg(x) не определён&quot;);
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        if (Math.abs(normalized) &gt;= Math.PI / 2 - 1e-10) {</span>
+<span class="fc" id="L48">            throw new ArithmeticException(</span>
+<span class="fc" id="L49">                    &quot;Значение x слишком близко к π/2 + πn, tg(x) не определён&quot;);</span>
         }
 
-<span class="fc" id="L62">        double result = 0.0;</span>
-<span class="fc" id="L63">        double xPow = normalized; // x^(2n+1), начинаем с x^1</span>
+<span class="fc" id="L52">        double result = 0.0;</span>
+<span class="fc" id="L53">        double xPow = normalized; // x^(2n+1), начинаем с x^1</span>
 
-<span class="fc bfc" id="L65" title="All 2 branches covered.">        for (int n = 0; n &lt; terms; n++) {</span>
-<span class="fc" id="L66">            result += COEFFICIENTS[n] * xPow;</span>
-<span class="fc" id="L67">            xPow *= normalized * normalized; // x^(2n+1) -&gt; x^(2(n+1)+1)</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">        for (int n = 0; n &lt; terms; n++) {</span>
+<span class="fc" id="L56">            result += COEFFICIENTS[n] * xPow;</span>
+<span class="fc" id="L57">            xPow *= normalized * normalized;</span>
         }
 
-<span class="fc" id="L70">        return result;</span>
+<span class="fc" id="L60">        return result;</span>
     }
 
-    /**
-     * Вычисляет tan(x) с максимальным количеством членов ряда.
-     *
-     * @param x аргумент в радианах
-     * @return приближённое значение tg(x)
-     */
     public static double compute(double x) {
-<span class="fc" id="L80">        return compute(x, COEFFICIENTS.length);</span>
+<span class="fc" id="L64">        return compute(x, COEFFICIENTS.length);</span>
     }
 
-    /**
-     * Нормализует угол к диапазону (-π/2, π/2) с учётом периодичности tg.
-     * Период tg(x) = π.
-     *
-     * @param x угол в радианах
-     * @return нормализованный угол в диапазоне (-π/2, π/2)
-     */
+
     static double normalizeAngle(double x) {
-<span class="fc" id="L91">        double result = x % Math.PI;</span>
-<span class="pc bpc" id="L92" title="1 of 2 branches missed.">        if (result &gt; Math.PI / 2) {</span>
-<span class="nc" id="L93">            result -= Math.PI;</span>
-<span class="pc bpc" id="L94" title="1 of 2 branches missed.">        } else if (result &lt; -Math.PI / 2) {</span>
-<span class="nc" id="L95">            result += Math.PI;</span>
+<span class="fc" id="L69">        double result = x % Math.PI;</span>
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">        if (result &gt; Math.PI / 2) {</span>
+<span class="nc" id="L71">            result -= Math.PI;</span>
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">        } else if (result &lt; -Math.PI / 2) {</span>
+<span class="nc" id="L73">            result += Math.PI;</span>
         }
-<span class="fc" id="L97">        return result;</span>
+<span class="fc" id="L75">        return result;</span>
     }
 
     /**
      * Возвращает максимальное количество доступных членов ряда.
      */
     public static int getMaxTerms() {
-<span class="fc" id="L104">        return COEFFICIENTS.length;</span>
+<span class="fc" id="L82">        return COEFFICIENTS.length;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

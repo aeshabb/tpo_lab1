@@ -30,22 +30,20 @@ public class Words {
 
     /**
      * Переносит слова в указанную галактику через дыру в пространстве-времени.
-     *
-     * @param destination целевая галактика
      */
     public void transportTo(Galaxy destination) {
-<span class="fc" id="L37">        this.transported = true;</span>
-<span class="fc" id="L38">        this.destination = destination;</span>
-<span class="fc" id="L39">    }</span>
+<span class="fc" id="L35">        this.transported = true;</span>
+<span class="fc" id="L36">        this.destination = destination;</span>
+<span class="fc" id="L37">    }</span>
 
     public Galaxy getDestination() {
-<span class="fc" id="L42">        return destination;</span>
+<span class="fc" id="L40">        return destination;</span>
     }
 
     @Override
     public String toString() {
-<span class="nc" id="L47">        return &quot;Words{content='&quot; + content + &quot;', speaker=&quot; + speaker.getName() +</span>
-                &quot;, transported=&quot; + transported + &quot;}&quot;;
+<span class="nc" id="L45">        return &quot;Words{content='&quot; + content + &quot;', speaker=&quot; + speaker.getName() +</span>
+<span class="nc" id="L46">                &quot;, transported=&quot; + transported + &quot;}&quot;;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

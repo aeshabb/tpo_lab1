@@ -23,24 +23,21 @@ public class SpaceTimeHole {
 
     /**
      * Переносит слова через дыру к месту назначения — далёкой галактике.
-     *
-     * @param words слова, которые нужно перенести
-     * @throws IllegalStateException если дыра закрыта
      */
     public void transport(Words words) {
-<span class="fc bfc" id="L31" title="All 2 branches covered.">        if (!open) {</span>
-<span class="fc" id="L32">            throw new IllegalStateException(&quot;Дыра в пространстве-времени уже закрыта&quot;);</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">        if (!open) {</span>
+<span class="fc" id="L29">            throw new IllegalStateException(&quot;Дыра в пространстве-времени уже закрыта&quot;);</span>
         }
-<span class="fc" id="L34">        words.transportTo(destination);</span>
-<span class="fc" id="L35">    }</span>
+<span class="fc" id="L31">        words.transportTo(destination);</span>
+<span class="fc" id="L32">    }</span>
 
     public Galaxy getDestination() {
-<span class="fc" id="L38">        return destination;</span>
+<span class="fc" id="L35">        return destination;</span>
     }
 
     @Override
     public String toString() {
-<span class="nc" id="L43">        return &quot;SpaceTimeHole{destination=&quot; + destination + &quot;, open=&quot; + open + &quot;}&quot;;</span>
+<span class="nc" id="L40">        return &quot;SpaceTimeHole{destination=&quot; + destination + &quot;, open=&quot; + open + &quot;}&quot;;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
