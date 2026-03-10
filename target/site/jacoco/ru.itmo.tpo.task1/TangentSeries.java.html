@@ -6,81 +6,83 @@
  * sin(x) = x - x^3/3! + x^5/5! - ...
  * cos(x) = 1 - x^2/2! + x^4/4! - ...
  * tg(x) = sin(x) / cos(x)
- *
- * Ряды sin(x) и cos(x) вычисляются после нормализации угла к интервалу (-π/2, π/2).
- */
-<span class="nc" id="L12">public class TangentSeries {</span>
+ * */
+<span class="nc" id="L10">public class TangentSeries {</span>
 
     private static final int MAX_TERMS = 20;
     private static final double UNDEFINED_EPSILON = 1e-10;
 
     public static double compute(double x, int terms) {
-<span class="fc bfc" id="L18" title="All 4 branches covered.">        if (terms &lt; 1 || terms &gt; MAX_TERMS) {</span>
-<span class="fc" id="L19">            throw new IllegalArgumentException(</span>
-<span class="fc" id="L20">                    &quot;Количество членов ряда должно быть от 1 до &quot; + MAX_TERMS);</span>
+<span class="fc bfc" id="L16" title="All 4 branches covered.">        if (terms &lt; 1 || terms &gt; MAX_TERMS) {</span>
+<span class="fc" id="L17">            throw new IllegalArgumentException(</span>
+<span class="fc" id="L18">                    &quot;Количество членов ряда должно быть от 1 до &quot; + MAX_TERMS);</span>
         }
 
-<span class="fc" id="L23">        double normalized = normalizeAngle(x);</span>
-
-<span class="fc bfc" id="L25" title="All 2 branches covered.">        if (Math.abs(normalized) &gt;= Math.PI / 2 - UNDEFINED_EPSILON) {</span>
-<span class="fc" id="L26">            throw new ArithmeticException(</span>
-<span class="fc" id="L27">                    &quot;Значение x слишком близко к π/2 + πn, tg(x) не определён&quot;);</span>
+<span class="fc bfc" id="L21" title="All 2 branches covered.">        if (!Double.isFinite(x)) {</span>
+<span class="fc" id="L22">            throw new IllegalArgumentException(&quot;x должен быть конечным числом&quot;);</span>
         }
 
-<span class="fc" id="L30">        double sine = sineSeries(normalized, terms);</span>
-<span class="fc" id="L31">        double cosine = cosineSeries(normalized, terms);</span>
+<span class="fc" id="L25">        double normalized = normalizeAngle(x);</span>
 
-<span class="pc bpc" id="L33" title="1 of 2 branches missed.">        if (Math.abs(cosine) &lt; UNDEFINED_EPSILON) {</span>
-<span class="nc" id="L34">            throw new ArithmeticException(</span>
-<span class="nc" id="L35">                    &quot;Значение x слишком близко к π/2 + πn, tg(x) не определён&quot;);</span>
+<span class="fc bfc" id="L27" title="All 2 branches covered.">        if (Math.abs(normalized) &gt;= Math.PI / 2 - UNDEFINED_EPSILON) {</span>
+<span class="fc" id="L28">            throw new ArithmeticException(</span>
+<span class="fc" id="L29">                    &quot;Значение x слишком близко к π/2 + πn, tg(x) не определён&quot;);</span>
         }
 
-<span class="fc" id="L38">        return sine / cosine;</span>
+<span class="fc" id="L32">        double sine = sineSeries(normalized, terms);</span>
+<span class="fc" id="L33">        double cosine = cosineSeries(normalized, terms);</span>
+
+<span class="pc bpc" id="L35" title="1 of 2 branches missed.">        if (Math.abs(cosine) &lt; UNDEFINED_EPSILON) {</span>
+<span class="nc" id="L36">            throw new ArithmeticException(</span>
+<span class="nc" id="L37">                    &quot;Значение x слишком близко к π/2 + πn, tg(x) не определён&quot;);</span>
+        }
+
+<span class="fc" id="L40">        return sine / cosine;</span>
     }
 
     public static double compute(double x) {
-<span class="fc" id="L42">        return compute(x, MAX_TERMS);</span>
+<span class="fc" id="L44">        return compute(x, MAX_TERMS);</span>
     }
 
     private static double sineSeries(double x, int terms) {
-<span class="fc" id="L46">        double sum = 0.0;</span>
-<span class="fc" id="L47">        double term = x;</span>
+<span class="fc" id="L48">        double sum = 0.0;</span>
+<span class="fc" id="L49">        double term = x;</span>
 
-<span class="fc bfc" id="L49" title="All 2 branches covered.">        for (int n = 0; n &lt; terms; n++) {</span>
-<span class="fc" id="L50">            sum += term;</span>
-<span class="fc" id="L51">            term *= -x * x / ((2.0 * n + 2.0) * (2.0 * n + 3.0));</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">        for (int n = 0; n &lt; terms; n++) {</span>
+<span class="fc" id="L52">            sum += term;</span>
+<span class="fc" id="L53">            term *= -x * x / ((2.0 * n + 2.0) * (2.0 * n + 3.0));</span>
         }
 
-<span class="fc" id="L54">        return sum;</span>
+<span class="fc" id="L56">        return sum;</span>
     }
 
     private static double cosineSeries(double x, int terms) {
-<span class="fc" id="L58">        double sum = 0.0;</span>
-<span class="fc" id="L59">        double term = 1.0;</span>
+<span class="fc" id="L60">        double sum = 0.0;</span>
+<span class="fc" id="L61">        double term = 1.0;</span>
 
-<span class="fc bfc" id="L61" title="All 2 branches covered.">        for (int n = 0; n &lt; terms; n++) {</span>
-<span class="fc" id="L62">            sum += term;</span>
-<span class="fc" id="L63">            term *= -x * x / ((2.0 * n + 1.0) * (2.0 * n + 2.0));</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        for (int n = 0; n &lt; terms; n++) {</span>
+<span class="fc" id="L64">            sum += term;</span>
+<span class="fc" id="L65">            term *= -x * x / ((2.0 * n + 1.0) * (2.0 * n + 2.0));</span>
         }
 
-<span class="fc" id="L66">        return sum;</span>
+<span class="fc" id="L68">        return sum;</span>
     }
 
     static double normalizeAngle(double x) {
-<span class="fc" id="L70">        double result = x % Math.PI;</span>
-<span class="fc bfc" id="L71" title="All 2 branches covered.">        if (result &gt; Math.PI / 2) {</span>
-<span class="fc" id="L72">            result -= Math.PI;</span>
-<span class="fc bfc" id="L73" title="All 2 branches covered.">        } else if (result &lt; -Math.PI / 2) {</span>
-<span class="fc" id="L74">            result += Math.PI;</span>
+<span class="fc" id="L72">        double result = x % Math.PI;</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if (result &gt; Math.PI / 2) {</span>
+<span class="fc" id="L74">            result -= Math.PI;</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">        } else if (result &lt; -Math.PI / 2) {</span>
+<span class="fc" id="L76">            result += Math.PI;</span>
         }
-<span class="fc" id="L76">        return result;</span>
+<span class="fc" id="L78">        return result;</span>
     }
 
     /**
      * Возвращает максимальное количество доступных членов ряда.
      */
     public static int getMaxTerms() {
-<span class="fc" id="L83">        return MAX_TERMS;</span>
+<span class="fc" id="L85">        return MAX_TERMS;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

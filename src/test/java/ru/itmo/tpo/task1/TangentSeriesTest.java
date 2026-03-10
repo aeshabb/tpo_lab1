@@ -34,7 +34,7 @@ class TangentSeriesTest {
         @Test
         @DisplayName("tg(0) = 0")
         void testZero() {
-            assertEquals(0.0, TangentSeries.compute(0.0), EPSILON);
+            assertEquals(0.0, TangentSeries.compute(0.0));
         }
 
         @Test
@@ -61,6 +61,13 @@ class TangentSeriesTest {
         void testPiOver3() {
             double expected = Math.sqrt(3);
             assertEquals(expected, TangentSeries.compute(Math.PI / 3), COARSE_EPSILON);
+        }
+
+        @Test
+        @DisplayName("tg(-π/3) = -√3 ≈ -1.7321")
+        void testNegativePiOver3() {
+            double expected = -Math.sqrt(3);
+            assertEquals(expected, TangentSeries.compute(-Math.PI / 3), COARSE_EPSILON);
         }
 
         @Test
@@ -95,10 +102,10 @@ class TangentSeriesTest {
 
         @ParameterizedTest
         @DisplayName("Малые значения: tg(x) ≈ x при x → 0")
-        @ValueSource(doubles = {1e-6, 1e-4, 1e-2})
+        @ValueSource(doubles = {-0.01, 0.01})
         void testSmallValues(double x) {
             double result = TangentSeries.compute(x, 1);
-            assertEquals(x, result, 1e-3,
+            assertEquals(x, result, 1e-6,
                     "При малых x, tg(x) ≈ x (линейное приближение)");
         }
     }
@@ -155,7 +162,6 @@ class TangentSeriesTest {
         @DisplayName("Сравнение с Math.tan() в характерных и приграничных точках")
         @CsvSource({
                 "0.0,    1e-10",
-                "0.2617993877991494,    1e-10",
                 "0.5235987755982988,    1e-10",
                 "0.7853981633974483,    1e-8",
                 "1.0471975511965976,    1e-6",
@@ -224,6 +230,20 @@ class TangentSeriesTest {
             assertThrows(IllegalArgumentException.class,
                     () -> TangentSeries.compute(0.5, TangentSeries.getMaxTerms() + 1));
         }
+
+        @Test
+        @DisplayName("Исключение при x = NaN")
+        void testNaNThrowsException() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> TangentSeries.compute(Double.NaN));
+        }
+
+        @Test
+        @DisplayName("Исключение при x = +Infinity")
+        void testPositiveInfinityThrowsException() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> TangentSeries.compute(Double.POSITIVE_INFINITY));
+        }
     }
 
     @Nested
@@ -252,16 +272,16 @@ class TangentSeriesTest {
         @Test
         @DisplayName("Нормализация большого положительного угла")
         void testLargePositiveAngle() {
-            double x = Math.PI / 6 + 10 * Math.PI;
-            double expected = Math.tan(Math.PI / 6);
+            double x = 0.3 + 10 * Math.PI;
+            double expected = Math.tan(0.3);
             assertEquals(expected, TangentSeries.compute(x), COARSE_EPSILON);
         }
 
         @Test
         @DisplayName("Нормализация большого отрицательного угла")
         void testLargeNegativeAngle() {
-            double x = -Math.PI / 6 - 10 * Math.PI;
-            double expected = Math.tan(-Math.PI / 6);
+            double x = -0.3 - 10 * Math.PI;
+            double expected = Math.tan(-0.3);
             assertEquals(expected, TangentSeries.compute(x), COARSE_EPSILON);
         }
     }

@@ -6,9 +6,7 @@ package ru.itmo.tpo.task1;
  * sin(x) = x - x^3/3! + x^5/5! - ...
  * cos(x) = 1 - x^2/2! + x^4/4! - ...
  * tg(x) = sin(x) / cos(x)
- *
- * Ряды sin(x) и cos(x) вычисляются после нормализации угла к интервалу (-π/2, π/2).
- */
+ * */
 public class TangentSeries {
 
     private static final int MAX_TERMS = 20;
@@ -18,6 +16,10 @@ public class TangentSeries {
         if (terms < 1 || terms > MAX_TERMS) {
             throw new IllegalArgumentException(
                     "Количество членов ряда должно быть от 1 до " + MAX_TERMS);
+        }
+
+        if (!Double.isFinite(x)) {
+            throw new IllegalArgumentException("x должен быть конечным числом");
         }
 
         double normalized = normalizeAngle(x);
