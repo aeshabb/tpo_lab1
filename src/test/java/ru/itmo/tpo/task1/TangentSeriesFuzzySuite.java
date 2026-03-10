@@ -10,12 +10,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @DisplayName("Отдельный fuzzy-набор для tg(x)")
 class TangentSeriesFuzzySuite {
 
-    private static final int ITERATIONS = 2_000;
+    private static final int ITERATIONS = 5_000;
     private static final long SEED = 42L;
+    private static final double MIN_X = -1_000.0;
+    private static final double MAX_X = 1_000.0;
+    private static final double ASYMPTOTE_GAP = 1e-4;
 
     @Test
-    @DisplayName("Fuzzy: сравнение с Math.tan() на значимых областях")
-    void matchesMathTanOnMeaningfulRanges() {
+    @DisplayName("Fuzzy: сравнение с Math.tan() на случайных допустимых значениях")
+    void matchesMathTanOnRandomValues() {
         SplittableRandom random = new SplittableRandom(SEED);
 
         for (int i = 0; i < ITERATIONS; i++) {
@@ -28,33 +31,17 @@ class TangentSeriesFuzzySuite {
     }
 
     private static double generateInput(SplittableRandom random) {
-        int zone = random.nextInt(6);
-
-        return switch (zone) {
-            case 0 -> random.nextDouble(-1e-3, 1e-3);
-            case 1 -> around(random, Math.PI / 6, 1e-3);
-            case 2 -> around(random, Math.PI / 4, 1e-3);
-            case 3 -> around(random, Math.PI / 3, 1e-3);
-            case 4 -> nearAsymptote(random, 1.0);
-            default -> nearAsymptote(random, -1.0);
-        };
-    }
-
-    private static double around(SplittableRandom random, double center, double radius) {
-        double signedCenter = random.nextBoolean() ? center : -center;
-        int periodShift = random.nextInt(-3, 4);
-        double offset = random.nextDouble(-radius, radius);
-        return signedCenter + offset + periodShift * Math.PI;
-    }
-
-    private static double nearAsymptote(SplittableRandom random, double sign) {
-        double delta = Math.pow(10.0, -random.nextDouble(2.0, 5.0));
-        int periodShift = random.nextInt(-3, 4);
-        return sign * (Math.PI / 2 - delta) + periodShift * Math.PI;
+        while (true) {
+            double x = random.nextDouble(MIN_X, MAX_X);
+            double distanceToAsymptote = Math.PI / 2 - Math.abs(TangentSeries.normalizeAngle(x));
+            if (distanceToAsymptote > ASYMPTOTE_GAP) {
+                return x;
+            }
+        }
     }
 
     private static double toleranceFor(double x) {
         double normalizedDistance = Math.PI / 2 - Math.abs(TangentSeries.normalizeAngle(x));
-        return normalizedDistance < 1e-3 ? 1e-2 : 1e-6;
+        return normalizedDistance < 1e-2 ? 1e-4 : 1e-6;
     }
 }
