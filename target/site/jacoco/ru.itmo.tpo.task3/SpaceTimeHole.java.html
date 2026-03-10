@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SpaceTimeHole.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TPO Lab 1</a> &gt; <a href="index.source.html" class="el_package">ru.itmo.tpo.task3</a> &gt; <span class="el_source">SpaceTimeHole.java</span></div><h1>SpaceTimeHole.java</h1><pre class="source lang-java linenums">package ru.itmo.tpo.task3;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SpaceTimeHole.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TPO Lab 1</a> &gt; <a href="index.source.html" class="el_package">ru.itmo.tpo.task3</a> &gt; <span class="el_source">SpaceTimeHole.java</span></div><h1>SpaceTimeHole.java</h1><pre class="source lang-java linenums">package ru.itmo.tpo.task3;
 
 /**
  * Дыра в ткани пространства-времени.
@@ -7,37 +7,62 @@
 public class SpaceTimeHole {
     private final Galaxy destination;
     private boolean open;
+    private static final double BASE_TRANSFER_TIME = 0.5;
 
-<span class="fc" id="L11">    public SpaceTimeHole(Galaxy destination) {</span>
-<span class="fc" id="L12">        this.destination = destination;</span>
-<span class="fc" id="L13">        this.open = true;</span>
-<span class="fc" id="L14">    }</span>
+<span class="fc" id="L12">    public SpaceTimeHole(Galaxy destination) {</span>
+<span class="fc" id="L13">        this.destination = destination;</span>
+<span class="fc" id="L14">        this.open = true;</span>
+<span class="fc" id="L15">    }</span>
 
     public boolean isOpen() {
-<span class="fc" id="L17">        return open;</span>
+<span class="fc" id="L18">        return open;</span>
     }
 
     public void close() {
-<span class="fc" id="L21">        this.open = false;</span>
-<span class="fc" id="L22">    }</span>
+<span class="fc" id="L22">        this.open = false;</span>
+<span class="fc" id="L23">    }</span>
 
     /**
      * Переносит слова через дыру к месту назначения — далёкой галактике.
      */
     public void transport(Words words) {
-<span class="fc bfc" id="L28" title="All 2 branches covered.">        if (!open) {</span>
-<span class="fc" id="L29">            throw new IllegalStateException(&quot;Дыра в пространстве-времени уже закрыта&quot;);</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        if (!open) {</span>
+<span class="fc" id="L30">            throw new IllegalStateException(&quot;Дыра в пространстве-времени уже закрыта&quot;);</span>
         }
-<span class="fc" id="L31">        words.transportTo(destination);</span>
-<span class="fc" id="L32">    }</span>
+<span class="fc" id="L32">        words.transportTo(destination);</span>
+<span class="fc" id="L33">    }</span>
+
+    /**
+     * Вычисляет длительность переноса слов через дыру.
+     * Чем длиннее фраза, тем немного больше длительность.
+     */
+    public double calculateTransferTime(Words words) {
+<span class="fc" id="L40">        return BASE_TRANSFER_TIME + words.getCharacterCount() / 100.0;</span>
+    }
+
+    /**
+     * Эффективная скорость переноса слов с учётом искривления пространства.
+     */
+    public double calculateEffectiveSpeed(Words words, Cosmos cosmos) {
+<span class="fc" id="L47">        double distance = cosmos.calculateEffectiveDistance(destination);</span>
+<span class="fc" id="L48">        double time = calculateTransferTime(words);</span>
+<span class="fc" id="L49">        return distance / time;</span>
+    }
+
+    public void transport(Words words, Cosmos cosmos) {
+<span class="fc" id="L53">        transport(words);</span>
+<span class="fc" id="L54">        double time = calculateTransferTime(words);</span>
+<span class="fc" id="L55">        double speed = calculateEffectiveSpeed(words, cosmos);</span>
+<span class="fc" id="L56">        words.recordTravelMetrics(time, speed);</span>
+<span class="fc" id="L57">    }</span>
 
     public Galaxy getDestination() {
-<span class="fc" id="L35">        return destination;</span>
+<span class="fc" id="L60">        return destination;</span>
     }
 
     @Override
     public String toString() {
-<span class="nc" id="L40">        return &quot;SpaceTimeHole{destination=&quot; + destination + &quot;, open=&quot; + open + &quot;}&quot;;</span>
+<span class="nc" id="L65">        return &quot;SpaceTimeHole{destination=&quot; + destination + &quot;, open=&quot; + open + &quot;}&quot;;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,17 +1,17 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
 TPO Lab 1,ru.itmo.tpo.task3,SpaceTimeFabric,0,36,1,5,0,9,1,7,0,5
 TPO Lab 1,ru.itmo.tpo.task3,InterstellarWar,8,29,0,0,2,12,1,6,1,6
-TPO Lab 1,ru.itmo.tpo.task3,SpaceTimeHole,7,32,0,2,1,12,1,6,1,5
+TPO Lab 1,ru.itmo.tpo.task3,SpaceTimeHole,7,70,0,2,1,21,1,9,1,8
 TPO Lab 1,ru.itmo.tpo.task3,WarlikeCreature.WarReadiness,0,44,0,0,0,5,0,1,0,1
-TPO Lab 1,ru.itmo.tpo.task3,Cosmos,4,9,0,0,1,4,1,2,1,2
+TPO Lab 1,ru.itmo.tpo.task3,Cosmos,4,21,0,0,1,7,1,4,1,4
 TPO Lab 1,ru.itmo.tpo.task3,LifeStyle.Quality,0,34,0,0,0,4,0,1,0,1
-TPO Lab 1,ru.itmo.tpo.task3,Scenario,0,111,0,0,0,28,0,9,0,9
+TPO Lab 1,ru.itmo.tpo.task3,Scenario,0,113,0,0,0,28,0,9,0,9
 TPO Lab 1,ru.itmo.tpo.task3,Person,4,34,0,0,1,11,1,6,1,6
 TPO Lab 1,ru.itmo.tpo.task3,WarlikeCreature,11,47,0,2,2,17,1,10,1,9
-TPO Lab 1,ru.itmo.tpo.task3,Words,9,34,0,0,2,13,1,6,1,6
-TPO Lab 1,ru.itmo.tpo.task3,Galaxy,12,58,0,6,3,15,2,11,2,8
+TPO Lab 1,ru.itmo.tpo.task3,Words,9,57,0,0,2,21,1,10,1,10
+TPO Lab 1,ru.itmo.tpo.task3,Galaxy,24,103,3,9,6,21,8,13,5,10
 TPO Lab 1,ru.itmo.tpo.task3,LifeStyle,7,46,0,5,1,14,1,9,1,6
-TPO Lab 1,ru.itmo.tpo.task1,TangentSeries,8,154,1,17,3,33,2,14,1,6
+TPO Lab 1,ru.itmo.tpo.task1,TangentSeries,162,0,18,0,36,0,16,0,7,0
 TPO Lab 1,ru.itmo.tpo.task2,HashTable.TracePoint,0,94,0,0,0,10,0,1,0,1
 TPO Lab 1,ru.itmo.tpo.task2,HashTable.Entry,6,19,0,0,1,8,1,4,1,4
 TPO Lab 1,ru.itmo.tpo.task2,HashTable,3,321,0,34,1,78,1,28,1,11

@@ -6,13 +6,26 @@ package ru.itmo.tpo.task3;
  */
 public class Cosmos {
     private final boolean almostBoundless;
+    private final double spaceCurvatureFactor;
 
     public Cosmos() {
         this.almostBoundless = true;
+        this.spaceCurvatureFactor = 42.0;
     }
 
     public boolean isAlmostBoundless() {
         return almostBoundless;
+    }
+
+    public double getSpaceCurvatureFactor() {
+        return spaceCurvatureFactor;
+    }
+
+    /**
+     * Эффективное расстояние с учётом искривления пространства.
+     */
+    public double calculateEffectiveDistance(Galaxy galaxy) {
+        return galaxy.distanceFromOrigin() / spaceCurvatureFactor;
     }
 
     @Override

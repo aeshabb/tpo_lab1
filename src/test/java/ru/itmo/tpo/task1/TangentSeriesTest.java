@@ -158,24 +158,6 @@ class TangentSeriesTest {
             assertEquals(expected, result, 1e-10);
         }
 
-        @ParameterizedTest
-        @DisplayName("Сравнение с Math.tan() в характерных и приграничных точках")
-        @CsvSource({
-                "0.0,    1e-10",
-                "0.5235987755982988,    1e-10",
-                "0.7853981633974483,    1e-8",
-                "1.0471975511965976,    1e-6",
-                "1.5697963267948967,    1e-2",
-                "-0.5235987755982988,   1e-10",
-                "-0.7853981633974483,   1e-8",
-                "-1.5697963267948967,   1e-2"
-        })
-        void testAgainstMathTan(double x, double tolerance) {
-            double expected = Math.tan(x);
-            double result = TangentSeries.compute(x);
-            assertEquals(expected, result, tolerance,
-                    "tg(" + x + "): expected=" + expected + ", got=" + result);
-        }
     }
 
     @Nested

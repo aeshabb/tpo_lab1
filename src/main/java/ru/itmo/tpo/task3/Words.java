@@ -8,12 +8,16 @@ public class Words {
     private final Person speaker;
     private boolean transported;
     private Galaxy destination;
+    private double travelTime;
+    private double effectiveSpeed;
 
     public Words(String content, Person speaker) {
         this.content = content;
         this.speaker = speaker;
         this.transported = false;
         this.destination = null;
+        this.travelTime = 0.0;
+        this.effectiveSpeed = 0.0;
     }
 
     public String getContent() {
@@ -36,8 +40,25 @@ public class Words {
         this.destination = destination;
     }
 
+    public void recordTravelMetrics(double travelTime, double effectiveSpeed) {
+        this.travelTime = travelTime;
+        this.effectiveSpeed = effectiveSpeed;
+    }
+
     public Galaxy getDestination() {
         return destination;
+    }
+
+    public double getTravelTime() {
+        return travelTime;
+    }
+
+    public double getEffectiveSpeed() {
+        return effectiveSpeed;
+    }
+
+    public int getCharacterCount() {
+        return content.length();
     }
 
     @Override

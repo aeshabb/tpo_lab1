@@ -11,12 +11,22 @@ public class Galaxy {
     private final boolean distant; // далёкая
     private final List<WarlikeCreature> inhabitants;
     private InterstellarWar pendingWar;
+    private final double x;
+    private final double y;
+    private final double z;
 
     public Galaxy(String name, boolean distant) {
+        this(name, distant, distant ? 1200.0 : 0.0, distant ? 900.0 : 0.0, distant ? 400.0 : 0.0);
+    }
+
+    public Galaxy(String name, boolean distant, double x, double y, double z) {
         this.name = name;
         this.distant = distant;
         this.inhabitants = new ArrayList<>();
         this.pendingWar = null;
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
     public String getName() {
@@ -25,6 +35,25 @@ public class Galaxy {
 
     public boolean isDistant() {
         return distant;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public double getZ() {
+        return z;
+    }
+
+    /**
+     * Вычисляет евклидово расстояние от начала координат до галактики.
+     */
+    public double distanceFromOrigin() {
+        return Math.sqrt(x * x + y * y + z * z);
     }
 
     public void addInhabitant(WarlikeCreature creature) {

@@ -133,6 +133,23 @@ class DomainModelTest {
             assertTrue(words.isTransported());
             assertEquals(galaxy, words.getDestination());
         }
+
+        @Test
+        @DisplayName("Подсчёт количества символов в словах")
+        void testCharacterCount() {
+            Words words = new Words("фраза", new Person("Артур"));
+            assertEquals(5, words.getCharacterCount());
+        }
+
+        @Test
+        @DisplayName("Сохранение метрик переноса")
+        void testRecordTravelMetrics() {
+            Words words = new Words("фраза", new Person("Артур"));
+            words.recordTravelMetrics(1.25, 33.5);
+
+            assertEquals(1.25, words.getTravelTime(), 1e-9);
+            assertEquals(33.5, words.getEffectiveSpeed(), 1e-9);
+        }
     }
 
     @Nested
@@ -207,6 +224,51 @@ class DomainModelTest {
 
             assertTrue(words.isTransported());
             assertEquals(galaxy, words.getDestination());
+        }
+
+        @Test
+        @DisplayName("Вычисление времени переноса зависит от длины фразы")
+        void testCalculateTransferTime() {
+            SpaceTimeHole hole = new SpaceTimeHole(new Galaxy("Далёкая галактика", true));
+            Words shortWords = new Words("привет", new Person("Артур"));
+            Words longWords = new Words("Очень длинная фраза для проверки времени переноса", new Person("Артур"));
+
+            double shortTime = hole.calculateTransferTime(shortWords);
+            double longTime = hole.calculateTransferTime(longWords);
+
+            assertTrue(longTime > shortTime);
+            assertEquals(0.5 + shortWords.getCharacterCount() / 100.0, shortTime, 1e-9);
+        }
+
+        @Test
+        @DisplayName("Эффективная скорость переноса вычисляется по формуле distance / time")
+        void testCalculateEffectiveSpeed() {
+            Galaxy galaxy = new Galaxy("Тестовая галактика", true, 300.0, 400.0, 0.0);
+            Cosmos cosmos = new Cosmos();
+            SpaceTimeHole hole = new SpaceTimeHole(galaxy);
+            Words words = new Words("фраза", new Person("Артур"));
+
+            double expectedDistance = galaxy.distanceFromOrigin() / cosmos.getSpaceCurvatureFactor();
+            double expectedTime = hole.calculateTransferTime(words);
+            double expectedSpeed = expectedDistance / expectedTime;
+
+            assertEquals(expectedSpeed, hole.calculateEffectiveSpeed(words, cosmos), 1e-9);
+        }
+
+        @Test
+        @DisplayName("Перенос через дыру с космосом сохраняет метрики")
+        void testTransportWordsWithMetrics() {
+            Galaxy galaxy = new Galaxy("Тестовая галактика", true, 300.0, 400.0, 0.0);
+            Cosmos cosmos = new Cosmos();
+            SpaceTimeHole hole = new SpaceTimeHole(galaxy);
+            Words words = new Words("фраза", new Person("Артур"));
+
+            hole.transport(words, cosmos);
+
+            assertTrue(words.isTransported());
+            assertEquals(galaxy, words.getDestination());
+            assertTrue(words.getTravelTime() > 0.0);
+            assertTrue(words.getEffectiveSpeed() > 0.0);
         }
 
         @Test
@@ -298,6 +360,13 @@ class DomainModelTest {
             inhabitants.clear(); // очистка копии
 
             assertEquals(1, galaxy.getInhabitants().size()); // оригинал не изменился
+        }
+
+        @Test
+        @DisplayName("Расстояние до галактики вычисляется по 3D-координатам")
+        void testDistanceFromOrigin() {
+            Galaxy galaxy = new Galaxy("Тестовая галактика", true, 3.0, 4.0, 12.0);
+            assertEquals(13.0, galaxy.distanceFromOrigin(), 1e-9);
         }
     }
 
@@ -394,6 +463,15 @@ class DomainModelTest {
             Cosmos cosmos = new Cosmos();
             assertTrue(cosmos.isAlmostBoundless());
         }
+
+        @Test
+        @DisplayName("Эффективное расстояние уменьшается из-за искривления пространства")
+        void testEffectiveDistanceCalculation() {
+            Cosmos cosmos = new Cosmos();
+            Galaxy galaxy = new Galaxy("Тестовая галактика", true, 420.0, 0.0, 0.0);
+
+            assertEquals(10.0, cosmos.calculateEffectiveDistance(galaxy), 1e-9);
+        }
     }
 
     @Nested
@@ -432,6 +510,8 @@ class DomainModelTest {
             // 2. Слова перенесены в далёкую галактику
             assertTrue(words.isTransported());
             assertEquals(scenario.getDistantGalaxy(), words.getDestination());
+            assertTrue(words.getTravelTime() > 0.0);
+            assertTrue(words.getEffectiveSpeed() > 0.0);
 
             // 3. Дыра закрылась
             assertFalse(scenario.getSpaceTimeFabric().hasOpenHole());
