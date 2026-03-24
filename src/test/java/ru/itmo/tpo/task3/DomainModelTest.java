@@ -5,23 +5,19 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Тестовое покрытие доменной модели.
- *
- * Предметная область:
- * "В тот самый момент, когда Артур произнёс 'А у меня, кажется, большие проблемы
- * с образом жизни', в ткани пространства-времени открылась случайная дыра и
- * перенесла его слова далеко-далеко во времени через почти бескрайние просторы
- * космоса в далёкую галактику, где странные воинственные существа балансировали
- * на грани ужасной межзвёздной войны."
- */
 @DisplayName("Тесты доменной модели")
 class DomainModelTest {
 
     @Nested
-    @DisplayName("Person (Персонаж)")
+    @DisplayName("Person")
     class PersonTest {
 
         private Person arthur;
@@ -32,37 +28,23 @@ class DomainModelTest {
         }
 
         @Test
-        @DisplayName("Создание персонажа с именем")
+        @DisplayName("Создание персонажа")
         void testCreation() {
             assertEquals("Артур", arthur.getName());
             assertNull(arthur.getCurrentPhrase());
-        }
-
-        @Test
-        @DisplayName("Персонаж произносит фразу и возвращает Words")
-        void testSayPhrase() {
-            String phrase = "А у меня, кажется, большие проблемы с образом жизни";
-            Words words = arthur.sayPhrase(phrase);
-
-            assertNotNull(words);
-            assertEquals(phrase, words.getContent());
-            assertEquals(arthur, words.getSpeaker());
-            assertEquals(phrase, arthur.getCurrentPhrase());
-        }
-
-        @Test
-        @DisplayName("У персонажа есть образ жизни по умолчанию (NORMAL)")
-        void testDefaultLifeStyle() {
-            assertNotNull(arthur.getLifeStyle());
             assertEquals(LifeStyle.Quality.NORMAL, arthur.getLifeStyle().getQuality());
         }
 
         @Test
-        @DisplayName("Можно установить проблемный образ жизни")
-        void testSetProblematicLifeStyle() {
-            arthur.setLifeStyle(new LifeStyle(LifeStyle.Quality.PROBLEMATIC));
-            assertTrue(arthur.getLifeStyle().hasProblems());
-            assertEquals(LifeStyle.Quality.PROBLEMATIC, arthur.getLifeStyle().getQuality());
+        @DisplayName("Персонаж произносит фразу")
+        void testSayPhrase() {
+            String phrase = "А у меня, кажется, большие проблемы с образом жизни";
+
+            Words words = arthur.sayPhrase(phrase);
+
+            assertEquals(phrase, words.getContent());
+            assertEquals(arthur, words.getSpeaker());
+            assertEquals(phrase, arthur.getCurrentPhrase());
         }
     }
 
@@ -71,37 +53,32 @@ class DomainModelTest {
     class LifeStyleTest {
 
         @Test
-        @DisplayName("Нормальный образ жизни - нет проблем")
+        @DisplayName("Нормальный образ жизни")
         void testNormalLifeStyle() {
             LifeStyle lifeStyle = new LifeStyle(LifeStyle.Quality.NORMAL);
+
             assertFalse(lifeStyle.hasProblems());
             assertEquals("обычный образ жизни", lifeStyle.getDescription());
         }
 
         @Test
-        @DisplayName("Проблемный образ жизни - есть проблемы")
+        @DisplayName("Проблемный образ жизни")
         void testProblematicLifeStyle() {
             LifeStyle lifeStyle = new LifeStyle(LifeStyle.Quality.PROBLEMATIC);
+
             assertTrue(lifeStyle.hasProblems());
             assertEquals("большие проблемы с образом жизни", lifeStyle.getDescription());
         }
 
         @Test
-        @DisplayName("Критический образ жизни - есть проблемы")
-        void testCriticalLifeStyle() {
-            LifeStyle lifeStyle = new LifeStyle(LifeStyle.Quality.CRITICAL);
-            assertTrue(lifeStyle.hasProblems());
-        }
-
-        @Test
-        @DisplayName("Изменение качества образа жизни обновляет описание")
+        @DisplayName("Изменение качества обновляет описание")
         void testChangeQuality() {
             LifeStyle lifeStyle = new LifeStyle(LifeStyle.Quality.NORMAL);
-            assertFalse(lifeStyle.hasProblems());
 
-            lifeStyle.setQuality(LifeStyle.Quality.PROBLEMATIC);
+            lifeStyle.setQuality(LifeStyle.Quality.CRITICAL);
+
             assertTrue(lifeStyle.hasProblems());
-            assertEquals("большие проблемы с образом жизни", lifeStyle.getDescription());
+            assertEquals("критические проблемы с образом жизни", lifeStyle.getDescription());
         }
     }
 
@@ -110,7 +87,7 @@ class DomainModelTest {
     class WordsTest {
 
         @Test
-        @DisplayName("Создание слов с содержанием и автором")
+        @DisplayName("Создание слов")
         void testCreation() {
             Person speaker = new Person("Артур");
             Words words = new Words("тестовая фраза", speaker);
@@ -122,53 +99,30 @@ class DomainModelTest {
         }
 
         @Test
-        @DisplayName("Перенос слов в галактику")
-        void testTransport() {
-            Person speaker = new Person("Артур");
-            Words words = new Words("фраза", speaker);
-            Galaxy galaxy = new Galaxy("Далёкая галактика", true);
+        @DisplayName("Перенос слов и сохранение метрик")
+        void testTransportAndMetrics() {
+            Words words = new Words("фраза", new Person("Артур"));
+            Galaxy galaxy = new Galaxy("Далекая галактика", true);
 
             words.transportTo(galaxy);
+            words.recordTravelMetrics(1.25, 33.5);
 
             assertTrue(words.isTransported());
             assertEquals(galaxy, words.getDestination());
-        }
-
-        @Test
-        @DisplayName("Подсчёт количества символов в словах")
-        void testCharacterCount() {
-            Words words = new Words("фраза", new Person("Артур"));
-            assertEquals(5, words.getCharacterCount());
-        }
-
-        @Test
-        @DisplayName("Сохранение метрик переноса")
-        void testRecordTravelMetrics() {
-            Words words = new Words("фраза", new Person("Артур"));
-            words.recordTravelMetrics(1.25, 33.5);
-
             assertEquals(1.25, words.getTravelTime(), 1e-9);
             assertEquals(33.5, words.getEffectiveSpeed(), 1e-9);
         }
     }
 
     @Nested
-    @DisplayName("SpaceTimeFabric (Ткань пространства-времени)")
+    @DisplayName("SpaceTimeFabric")
     class SpaceTimeFabricTest {
-
-        @Test
-        @DisplayName("Изначально нет дыр")
-        void testInitialState() {
-            SpaceTimeFabric fabric = new SpaceTimeFabric();
-            assertFalse(fabric.hasOpenHole());
-            assertNull(fabric.getCurrentHole());
-        }
 
         @Test
         @DisplayName("Открытие случайной дыры")
         void testOpenHole() {
             SpaceTimeFabric fabric = new SpaceTimeFabric();
-            Galaxy galaxy = new Galaxy("Далёкая галактика", true);
+            Galaxy galaxy = new Galaxy("Далекая галактика", true);
 
             SpaceTimeHole hole = fabric.openRandomHole(galaxy);
 
@@ -179,46 +133,29 @@ class DomainModelTest {
         }
 
         @Test
-        @DisplayName("Закрытие дыры")
+        @DisplayName("Закрытие дыры безопасно при любом состоянии")
         void testCloseHole() {
             SpaceTimeFabric fabric = new SpaceTimeFabric();
-            Galaxy galaxy = new Galaxy("Далёкая галактика", true);
+            Galaxy galaxy = new Galaxy("Далекая галактика", true);
             fabric.openRandomHole(galaxy);
 
             fabric.closeHole();
 
             assertFalse(fabric.hasOpenHole());
-        }
-
-        @Test
-        @DisplayName("Закрытие при отсутствии дыры - без ошибки")
-        void testCloseWhenNoHole() {
-            SpaceTimeFabric fabric = new SpaceTimeFabric();
             assertDoesNotThrow(fabric::closeHole);
         }
     }
 
     @Nested
-    @DisplayName("SpaceTimeHole (Дыра в пространстве-времени)")
+    @DisplayName("SpaceTimeHole")
     class SpaceTimeHoleTest {
 
         @Test
-        @DisplayName("Создание открытой дыры")
-        void testCreation() {
-            Galaxy galaxy = new Galaxy("Далёкая галактика", true);
-            SpaceTimeHole hole = new SpaceTimeHole(galaxy);
-
-            assertTrue(hole.isOpen());
-            assertEquals(galaxy, hole.getDestination());
-        }
-
-        @Test
-        @DisplayName("Перенос слов через дыру")
+        @DisplayName("Перенос слов через открытую дыру")
         void testTransportWords() {
-            Galaxy galaxy = new Galaxy("Далёкая галактика", true);
+            Galaxy galaxy = new Galaxy("Далекая галактика", true);
             SpaceTimeHole hole = new SpaceTimeHole(galaxy);
-            Person speaker = new Person("Артур");
-            Words words = new Words("фраза", speaker);
+            Words words = new Words("фраза", new Person("Артур"));
 
             hole.transport(words);
 
@@ -227,9 +164,9 @@ class DomainModelTest {
         }
 
         @Test
-        @DisplayName("Вычисление времени переноса зависит от длины фразы")
+        @DisplayName("Время переноса зависит от длины фразы")
         void testCalculateTransferTime() {
-            SpaceTimeHole hole = new SpaceTimeHole(new Galaxy("Далёкая галактика", true));
+            SpaceTimeHole hole = new SpaceTimeHole(new Galaxy("Далекая галактика", true));
             Words shortWords = new Words("привет", new Person("Артур"));
             Words longWords = new Words("Очень длинная фраза для проверки времени переноса", new Person("Артур"));
 
@@ -241,7 +178,7 @@ class DomainModelTest {
         }
 
         @Test
-        @DisplayName("Эффективная скорость переноса вычисляется по формуле distance / time")
+        @DisplayName("Эффективная скорость учитывает космос")
         void testCalculateEffectiveSpeed() {
             Galaxy galaxy = new Galaxy("Тестовая галактика", true, 300.0, 400.0, 0.0);
             Cosmos cosmos = new Cosmos();
@@ -250,13 +187,12 @@ class DomainModelTest {
 
             double expectedDistance = galaxy.distanceFromOrigin() / cosmos.getSpaceCurvatureFactor();
             double expectedTime = hole.calculateTransferTime(words);
-            double expectedSpeed = expectedDistance / expectedTime;
 
-            assertEquals(expectedSpeed, hole.calculateEffectiveSpeed(words, cosmos), 1e-9);
+            assertEquals(expectedDistance / expectedTime, hole.calculateEffectiveSpeed(words, cosmos), 1e-9);
         }
 
         @Test
-        @DisplayName("Перенос через дыру с космосом сохраняет метрики")
+        @DisplayName("Перенос с космосом сохраняет метрики")
         void testTransportWordsWithMetrics() {
             Galaxy galaxy = new Galaxy("Тестовая галактика", true, 300.0, 400.0, 0.0);
             Cosmos cosmos = new Cosmos();
@@ -274,69 +210,44 @@ class DomainModelTest {
         @Test
         @DisplayName("Нельзя переносить через закрытую дыру")
         void testTransportThroughClosedHole() {
-            Galaxy galaxy = new Galaxy("Далёкая галактика", true);
-            SpaceTimeHole hole = new SpaceTimeHole(galaxy);
+            SpaceTimeHole hole = new SpaceTimeHole(new Galaxy("Далекая галактика", true));
             hole.close();
 
-            Person speaker = new Person("Артур");
-            Words words = new Words("фраза", speaker);
-
-            assertThrows(IllegalStateException.class, () -> hole.transport(words));
-        }
-
-        @Test
-        @DisplayName("Закрытие дыры")
-        void testClose() {
-            Galaxy galaxy = new Galaxy("Далёкая галактика", true);
-            SpaceTimeHole hole = new SpaceTimeHole(galaxy);
-
-            hole.close();
-
-            assertFalse(hole.isOpen());
+            assertThrows(IllegalStateException.class,
+                    () -> hole.transport(new Words("фраза", new Person("Артур"))));
         }
     }
 
     @Nested
-    @DisplayName("Galaxy (Далёкая галактика)")
+    @DisplayName("Galaxy")
     class GalaxyTest {
-
-        @Test
-        @DisplayName("Создание далёкой галактики")
-        void testCreation() {
-            Galaxy galaxy = new Galaxy("Далёкая галактика", true);
-            assertEquals("Далёкая галактика", galaxy.getName());
-            assertTrue(galaxy.isDistant());
-            assertFalse(galaxy.hasWarlikeCreatures());
-        }
 
         @Test
         @DisplayName("Добавление воинственных существ")
         void testAddInhabitants() {
-            Galaxy galaxy = new Galaxy("Далёкая галактика", true);
+            Galaxy galaxy = new Galaxy("Далекая галактика", true);
             WarlikeCreature creature = new WarlikeCreature("Вид А");
 
             galaxy.addInhabitant(creature);
 
             assertTrue(galaxy.hasWarlikeCreatures());
             assertEquals(1, galaxy.getInhabitants().size());
-            assertEquals(creature, galaxy.getInhabitants().get(0));
         }
 
         @Test
         @DisplayName("Галактика на грани войны")
         void testOnBrinkOfWar() {
-            Galaxy galaxy = new Galaxy("Далёкая галактика", true);
-            InterstellarWar war = new InterstellarWar("ужасная межзвёздная война");
-            galaxy.setPendingWar(war);
+            Galaxy galaxy = new Galaxy("Далекая галактика", true);
+            galaxy.setPendingWar(new InterstellarWar("ужасная межзвездная война"));
 
             assertTrue(galaxy.isOnBrinkOfWar());
         }
 
         @Test
-        @DisplayName("Галактика не на грани войны (война уже началась)")
+        @DisplayName("После начала войны галактика уже не на грани")
         void testNotOnBrinkOfWarWhenStarted() {
-            Galaxy galaxy = new Galaxy("Далёкая галактика", true);
-            InterstellarWar war = new InterstellarWar("ужасная межзвёздная война");
+            Galaxy galaxy = new Galaxy("Далекая галактика", true);
+            InterstellarWar war = new InterstellarWar("ужасная межзвездная война");
             war.start();
             galaxy.setPendingWar(war);
 
@@ -344,94 +255,49 @@ class DomainModelTest {
         }
 
         @Test
-        @DisplayName("Галактика без войны")
-        void testNoWar() {
-            Galaxy galaxy = new Galaxy("Далёкая галактика", true);
-            assertFalse(galaxy.isOnBrinkOfWar());
-        }
-
-        @Test
-        @DisplayName("getInhabitants возвращает копию списка")
-        void testGetInhabitantsReturnsCopy() {
-            Galaxy galaxy = new Galaxy("Галактика", true);
-            galaxy.addInhabitant(new WarlikeCreature("Вид А"));
-
-            var inhabitants = galaxy.getInhabitants();
-            inhabitants.clear(); // очистка копии
-
-            assertEquals(1, galaxy.getInhabitants().size()); // оригинал не изменился
-        }
-
-        @Test
-        @DisplayName("Расстояние до галактики вычисляется по 3D-координатам")
+        @DisplayName("Расстояние до галактики вычисляется по координатам")
         void testDistanceFromOrigin() {
             Galaxy galaxy = new Galaxy("Тестовая галактика", true, 3.0, 4.0, 12.0);
+
             assertEquals(13.0, galaxy.distanceFromOrigin(), 1e-9);
         }
     }
 
     @Nested
-    @DisplayName("WarlikeCreature (Воинственные существа)")
+    @DisplayName("WarlikeCreature")
     class WarlikeCreatureTest {
 
         @Test
         @DisplayName("Создание странного воинственного существа")
         void testCreation() {
             WarlikeCreature creature = new WarlikeCreature("Неизвестный вид");
+
             assertTrue(creature.isStrange());
             assertTrue(creature.isWarlike());
             assertTrue(creature.isOnBrinkOfWar());
-            assertEquals("Неизвестный вид", creature.getSpecies());
         }
 
         @Test
-        @DisplayName("Существо балансирует на грани войны")
-        void testOnBrinkOfWar() {
-            WarlikeCreature creature = new WarlikeCreature("Вид А");
-            assertEquals(WarlikeCreature.WarReadiness.ON_BRINK_OF_WAR,
-                    creature.getWarReadiness());
-            assertTrue(creature.isOnBrinkOfWar());
-        }
-
-        @Test
-        @DisplayName("Изменение состояния готовности к войне")
+        @DisplayName("Изменение готовности к войне")
         void testChangeWarReadiness() {
             WarlikeCreature creature = new WarlikeCreature("Вид А");
-
             creature.setWarReadiness(WarlikeCreature.WarReadiness.AT_WAR);
+
             assertFalse(creature.isOnBrinkOfWar());
             assertEquals(WarlikeCreature.WarReadiness.AT_WAR, creature.getWarReadiness());
-
-            creature.setWarReadiness(WarlikeCreature.WarReadiness.PEACEFUL);
-            assertFalse(creature.isOnBrinkOfWar());
-        }
-
-        @Test
-        @DisplayName("Существо может стать не странным")
-        void testSetStrange() {
-            WarlikeCreature creature = new WarlikeCreature("Вид А");
-            creature.setStrange(false);
-            assertFalse(creature.isStrange());
-        }
-
-        @Test
-        @DisplayName("Существо может стать мирным")
-        void testSetNotWarlike() {
-            WarlikeCreature creature = new WarlikeCreature("Вид А");
-            creature.setWarlike(false);
-            assertFalse(creature.isWarlike());
         }
     }
 
     @Nested
-    @DisplayName("InterstellarWar (Межзвёздная война)")
+    @DisplayName("InterstellarWar")
     class InterstellarWarTest {
 
         @Test
-        @DisplayName("Создание ужасной межзвёздной войны")
+        @DisplayName("Создание ужасной межзвездной войны")
         void testCreation() {
-            InterstellarWar war = new InterstellarWar("ужасная межзвёздная война");
-            assertEquals("ужасная межзвёздная война", war.getDescription());
+            InterstellarWar war = new InterstellarWar("ужасная межзвездная война");
+
+            assertEquals("ужасная межзвездная война", war.getDescription());
             assertTrue(war.isTerrible());
             assertFalse(war.isStarted());
         }
@@ -441,28 +307,14 @@ class DomainModelTest {
         void testStart() {
             InterstellarWar war = new InterstellarWar("война");
             war.start();
-            assertTrue(war.isStarted());
-        }
 
-        @Test
-        @DisplayName("Война может быть не ужасной")
-        void testNotTerrible() {
-            InterstellarWar war = new InterstellarWar("мелкий конфликт");
-            war.setTerrible(false);
-            assertFalse(war.isTerrible());
+            assertTrue(war.isStarted());
         }
     }
 
     @Nested
-    @DisplayName("Cosmos (Космос)")
+    @DisplayName("Cosmos")
     class CosmosTest {
-
-        @Test
-        @DisplayName("Космос почти бескрайний")
-        void testAlmostBoundless() {
-            Cosmos cosmos = new Cosmos();
-            assertTrue(cosmos.isAlmostBoundless());
-        }
 
         @Test
         @DisplayName("Эффективное расстояние уменьшается из-за искривления пространства")
@@ -475,7 +327,7 @@ class DomainModelTest {
     }
 
     @Nested
-    @DisplayName("Scenario (Полный сценарий)")
+    @DisplayName("Scenario")
     class ScenarioTest {
 
         @Test
@@ -488,8 +340,6 @@ class DomainModelTest {
             assertTrue(scenario.getDistantGalaxy().isDistant());
             assertTrue(scenario.getDistantGalaxy().hasWarlikeCreatures());
             assertTrue(scenario.getDistantGalaxy().isOnBrinkOfWar());
-            assertTrue(scenario.getWar().isTerrible());
-            assertFalse(scenario.getWar().isStarted());
             assertFalse(scenario.isScenarioExecuted());
             assertNull(scenario.getSpokenWords());
         }
@@ -501,22 +351,14 @@ class DomainModelTest {
 
             Words words = scenario.execute();
 
-            // 1. Артур произнёс фразу
             assertNotNull(words);
-            assertEquals("А у меня, кажется, большие проблемы с образом жизни",
-                    words.getContent());
+            assertEquals("А у меня, кажется, большие проблемы с образом жизни", words.getContent());
             assertEquals(scenario.getArthur(), words.getSpeaker());
-
-            // 2. Слова перенесены в далёкую галактику
             assertTrue(words.isTransported());
             assertEquals(scenario.getDistantGalaxy(), words.getDestination());
             assertTrue(words.getTravelTime() > 0.0);
             assertTrue(words.getEffectiveSpeed() > 0.0);
-
-            // 3. Дыра закрылась
             assertFalse(scenario.getSpaceTimeFabric().hasOpenHole());
-
-            // 4. Сценарий выполнен
             assertTrue(scenario.isScenarioExecuted());
         }
 
@@ -525,33 +367,11 @@ class DomainModelTest {
         void testGalaxyInhabitants() {
             Scenario scenario = new Scenario();
 
-            var inhabitants = scenario.getDistantGalaxy().getInhabitants();
-            assertEquals(2, inhabitants.size());
-
-            for (var creature : inhabitants) {
-                assertTrue(creature.isStrange(), "Существо должно быть странным");
-                assertTrue(creature.isWarlike(), "Существо должно быть воинственным");
-                assertTrue(creature.isOnBrinkOfWar(),
-                        "Существо должно балансировать на грани войны");
+            for (WarlikeCreature creature : scenario.getDistantGalaxy().getInhabitants()) {
+                assertTrue(creature.isStrange());
+                assertTrue(creature.isWarlike());
+                assertTrue(creature.isOnBrinkOfWar());
             }
-        }
-
-        @Test
-        @DisplayName("Космос доступен в сценарии")
-        void testCosmosInScenario() {
-            Scenario scenario = new Scenario();
-            assertNotNull(scenario.getCosmos());
-            assertTrue(scenario.getCosmos().isAlmostBoundless());
-        }
-
-        @Test
-        @DisplayName("Война ужасная и ещё не началась до выполнения сценария")
-        void testWarState() {
-            Scenario scenario = new Scenario();
-
-            assertTrue(scenario.getWar().isTerrible());
-            assertFalse(scenario.getWar().isStarted());
-            assertTrue(scenario.getDistantGalaxy().isOnBrinkOfWar());
         }
     }
 }

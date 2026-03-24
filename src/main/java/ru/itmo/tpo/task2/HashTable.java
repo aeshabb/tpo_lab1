@@ -1,7 +1,5 @@
 package ru.itmo.tpo.task2;
 
-import java.util.LinkedList;
-
 public class HashTable {
 
     public static class Entry {
@@ -47,7 +45,14 @@ public class HashTable {
         void onTracePoint(TracePoint point);
     }
 
-    private final LinkedList<Entry>[] table;
+    private enum SlotState {
+        EMPTY,
+        OCCUPIED,
+        DELETED
+    }
+
+    private final Entry[] table;
+    private final SlotState[] states;
     private final int capacity;
     private int size;
     private TraceListener traceListener;
@@ -58,7 +63,11 @@ public class HashTable {
             throw new IllegalArgumentException("Размер должен быть положительный: " + capacity);
         }
         this.capacity = capacity;
-        this.table = new LinkedList[capacity];
+        this.table = new Entry[capacity];
+        this.states = new SlotState[capacity];
+        for (int i = 0; i < capacity; i++) {
+            states[i] = SlotState.EMPTY;
+        }
         this.size = 0;
     }
 
@@ -83,48 +92,97 @@ public class HashTable {
     }
 
     public void insert(int key, int value) {
-        int index = hash(key);
+        int startIndex = hash(key);
         trace(TracePoint.HASH_COMPUTED);
 
-        if (table[index] == null) {
-            trace(TracePoint.BUCKET_EMPTY);
-            table[index] = new LinkedList<>();
-            table[index].add(new Entry(key, value));
-            size++;
-            trace(TracePoint.ENTRY_INSERTED);
-        } else {
-            trace(TracePoint.BUCKET_NOT_EMPTY);
-            for (Entry entry : table[index]) {
-                if (entry.getKey() == key) {
-                    trace(TracePoint.KEY_FOUND);
-                    entry.setValue(value);
-                    trace(TracePoint.ENTRY_UPDATED);
-                    return;
+        boolean encounteredOccupied = false;
+        int firstDeletedIndex = -1;
+
+        for (int step = 0; step < capacity; step++) {
+            int index = (startIndex + step) % capacity;
+
+            if (states[index] == SlotState.EMPTY) {
+                if (!encounteredOccupied) {
+                    trace(TracePoint.BUCKET_EMPTY);
+                } else {
+                    trace(TracePoint.KEY_NOT_FOUND);
                 }
+
+                int insertionIndex = firstDeletedIndex >= 0 ? firstDeletedIndex : index;
+                table[insertionIndex] = new Entry(key, value);
+                states[insertionIndex] = SlotState.OCCUPIED;
+                size++;
+                trace(TracePoint.ENTRY_INSERTED);
+                return;
+            }
+
+            if (states[index] == SlotState.DELETED) {
+                if (firstDeletedIndex < 0) {
+                    firstDeletedIndex = index;
+                }
+                continue;
+            }
+
+            if (!encounteredOccupied) {
+                trace(TracePoint.BUCKET_NOT_EMPTY);
+                encounteredOccupied = true;
+            }
+
+            if (table[index].getKey() == key) {
+                trace(TracePoint.KEY_FOUND);
+                table[index].setValue(value);
+                trace(TracePoint.ENTRY_UPDATED);
+                return;
+            }
+        }
+
+        if (firstDeletedIndex >= 0) {
+            if (!encounteredOccupied) {
+                trace(TracePoint.BUCKET_NOT_EMPTY);
             }
             trace(TracePoint.KEY_NOT_FOUND);
-            table[index].add(new Entry(key, value));
+            table[firstDeletedIndex] = new Entry(key, value);
+            states[firstDeletedIndex] = SlotState.OCCUPIED;
             size++;
             trace(TracePoint.ENTRY_INSERTED);
+            return;
         }
+
+        throw new IllegalStateException("Хеш-таблица переполнена");
     }
 
     public Integer search(int key) {
-        int index = hash(key);
+        int startIndex = hash(key);
         trace(TracePoint.HASH_COMPUTED);
 
-        if (table[index] == null) {
-            trace(TracePoint.BUCKET_EMPTY);
-            trace(TracePoint.SEARCH_RESULT_RETURNED);
-            return null;
-        }
+        boolean encounteredOccupied = false;
 
-        trace(TracePoint.BUCKET_NOT_EMPTY);
-        for (Entry entry : table[index]) {
-            if (entry.getKey() == key) {
+        for (int step = 0; step < capacity; step++) {
+            int index = (startIndex + step) % capacity;
+
+            if (states[index] == SlotState.EMPTY) {
+                if (!encounteredOccupied) {
+                    trace(TracePoint.BUCKET_EMPTY);
+                } else {
+                    trace(TracePoint.KEY_NOT_FOUND);
+                }
+                trace(TracePoint.SEARCH_RESULT_RETURNED);
+                return null;
+            }
+
+            if (states[index] == SlotState.DELETED) {
+                continue;
+            }
+
+            if (!encounteredOccupied) {
+                trace(TracePoint.BUCKET_NOT_EMPTY);
+                encounteredOccupied = true;
+            }
+
+            if (table[index].getKey() == key) {
                 trace(TracePoint.KEY_FOUND);
                 trace(TracePoint.SEARCH_RESULT_RETURNED);
-                return entry.getValue();
+                return table[index].getValue();
             }
         }
 
@@ -135,26 +193,36 @@ public class HashTable {
 
 
     public boolean delete(int key) {
-        int index = hash(key);
+        int startIndex = hash(key);
         trace(TracePoint.HASH_COMPUTED);
 
-        if (table[index] == null) {
-            trace(TracePoint.BUCKET_EMPTY);
-            trace(TracePoint.KEY_NOT_FOUND);
-            return false;
-        }
+        boolean encounteredOccupied = false;
 
-        trace(TracePoint.BUCKET_NOT_EMPTY);
-        var iterator = table[index].iterator();
-        while (iterator.hasNext()) {
-            Entry entry = iterator.next();
-            if (entry.getKey() == key) {
-                trace(TracePoint.KEY_FOUND);
-                iterator.remove();
-                size--;
-                if (table[index].isEmpty()) {
-                    table[index] = null;
+        for (int step = 0; step < capacity; step++) {
+            int index = (startIndex + step) % capacity;
+
+            if (states[index] == SlotState.EMPTY) {
+                if (!encounteredOccupied) {
+                    trace(TracePoint.BUCKET_EMPTY);
                 }
+                trace(TracePoint.KEY_NOT_FOUND);
+                return false;
+            }
+
+            if (states[index] == SlotState.DELETED) {
+                continue;
+            }
+
+            if (!encounteredOccupied) {
+                trace(TracePoint.BUCKET_NOT_EMPTY);
+                encounteredOccupied = true;
+            }
+
+            if (table[index].getKey() == key) {
+                trace(TracePoint.KEY_FOUND);
+                table[index] = null;
+                states[index] = SlotState.DELETED;
+                size--;
                 trace(TracePoint.ENTRY_DELETED);
                 return true;
             }
@@ -181,13 +249,14 @@ public class HashTable {
         if (index < 0 || index >= capacity) {
             throw new IndexOutOfBoundsException("Индекс бакета вне диапазона: " + index);
         }
-        return table[index] == null ? 0 : table[index].size();
+        return states[index] == SlotState.OCCUPIED ? 1 : 0;
     }
 
 
     public void clear() {
         for (int i = 0; i < capacity; i++) {
             table[i] = null;
+            states[i] = SlotState.EMPTY;
         }
         size = 0;
     }
