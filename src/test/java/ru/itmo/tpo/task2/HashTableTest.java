@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -31,13 +32,15 @@ class HashTableTest {
     void insertIntoEmptySlot() {
         hashTable.insert(10, 100);
 
-        assertEquals(List.of(
-                HashTable.TracePoint.HASH_COMPUTED,
-                HashTable.TracePoint.BUCKET_EMPTY,
-                HashTable.TracePoint.ENTRY_INSERTED
-        ), traceLog);
-        assertEquals(1, hashTable.getSize());
-        assertEquals(100, hashTable.search(10));
+        assertAll(
+                () -> assertEquals(List.of(
+                        HashTable.TracePoint.HASH_COMPUTED,
+                        HashTable.TracePoint.BUCKET_EMPTY,
+                        HashTable.TracePoint.ENTRY_INSERTED
+                ), traceLog),
+                () -> assertEquals(1, hashTable.getSize()),
+                () -> assertEquals(100, hashTable.search(10))
+        );
     }
 
     @Test
@@ -48,15 +51,17 @@ class HashTableTest {
 
         hashTable.insert(8, 80);
 
-        assertEquals(List.of(
-                HashTable.TracePoint.HASH_COMPUTED,
-                HashTable.TracePoint.BUCKET_NOT_EMPTY,
-                HashTable.TracePoint.KEY_NOT_FOUND,
-                HashTable.TracePoint.ENTRY_INSERTED
-        ), traceLog);
-        assertEquals(2, hashTable.getSize());
-        assertEquals(80, hashTable.search(8));
-        assertEquals(1, hashTable.getBucketSize(2));
+        assertAll(
+                () -> assertEquals(List.of(
+                        HashTable.TracePoint.HASH_COMPUTED,
+                        HashTable.TracePoint.BUCKET_NOT_EMPTY,
+                        HashTable.TracePoint.KEY_NOT_FOUND,
+                        HashTable.TracePoint.ENTRY_INSERTED
+                ), traceLog),
+                () -> assertEquals(2, hashTable.getSize()),
+                () -> assertEquals(80, hashTable.search(8)),
+                () -> assertEquals(1, hashTable.getBucketSize(2))
+        );
     }
 
     @Test
@@ -67,25 +72,29 @@ class HashTableTest {
 
         hashTable.insert(5, 500);
 
-        assertEquals(List.of(
-                HashTable.TracePoint.HASH_COMPUTED,
-                HashTable.TracePoint.BUCKET_NOT_EMPTY,
-                HashTable.TracePoint.KEY_FOUND,
-                HashTable.TracePoint.ENTRY_UPDATED
-        ), traceLog);
-        assertEquals(1, hashTable.getSize());
-        assertEquals(500, hashTable.search(5));
+        assertAll(
+                () -> assertEquals(List.of(
+                        HashTable.TracePoint.HASH_COMPUTED,
+                        HashTable.TracePoint.BUCKET_NOT_EMPTY,
+                        HashTable.TracePoint.KEY_FOUND,
+                        HashTable.TracePoint.ENTRY_UPDATED
+                ), traceLog),
+                () -> assertEquals(1, hashTable.getSize()),
+                () -> assertEquals(500, hashTable.search(5))
+        );
     }
 
     @Test
     @DisplayName("SEARCH в пустом слоте: A -> B -> I")
     void searchInEmptySlot() {
-        assertNull(hashTable.search(1));
-        assertEquals(List.of(
-                HashTable.TracePoint.HASH_COMPUTED,
-                HashTable.TracePoint.BUCKET_EMPTY,
-                HashTable.TracePoint.SEARCH_RESULT_RETURNED
-        ), traceLog);
+        assertAll(
+                () -> assertNull(hashTable.search(1)),
+                () -> assertEquals(List.of(
+                        HashTable.TracePoint.HASH_COMPUTED,
+                        HashTable.TracePoint.BUCKET_EMPTY,
+                        HashTable.TracePoint.SEARCH_RESULT_RETURNED
+                ), traceLog)
+        );
     }
 
     @Test
@@ -95,13 +104,15 @@ class HashTableTest {
         hashTable.insert(8, 80);
         traceLog.clear();
 
-        assertEquals(80, hashTable.search(8));
-        assertEquals(List.of(
-                HashTable.TracePoint.HASH_COMPUTED,
-                HashTable.TracePoint.BUCKET_NOT_EMPTY,
-                HashTable.TracePoint.KEY_FOUND,
-                HashTable.TracePoint.SEARCH_RESULT_RETURNED
-        ), traceLog);
+        assertAll(
+                () -> assertEquals(80, hashTable.search(8)),
+                () -> assertEquals(List.of(
+                        HashTable.TracePoint.HASH_COMPUTED,
+                        HashTable.TracePoint.BUCKET_NOT_EMPTY,
+                        HashTable.TracePoint.KEY_FOUND,
+                        HashTable.TracePoint.SEARCH_RESULT_RETURNED
+                ), traceLog)
+        );
     }
 
     @Test
@@ -111,13 +122,15 @@ class HashTableTest {
         hashTable.insert(8, 80);
         traceLog.clear();
 
-        assertNull(hashTable.search(15));
-        assertEquals(List.of(
-                HashTable.TracePoint.HASH_COMPUTED,
-                HashTable.TracePoint.BUCKET_NOT_EMPTY,
-                HashTable.TracePoint.KEY_NOT_FOUND,
-                HashTable.TracePoint.SEARCH_RESULT_RETURNED
-        ), traceLog);
+        assertAll(
+                () -> assertNull(hashTable.search(15)),
+                () -> assertEquals(List.of(
+                        HashTable.TracePoint.HASH_COMPUTED,
+                        HashTable.TracePoint.BUCKET_NOT_EMPTY,
+                        HashTable.TracePoint.KEY_NOT_FOUND,
+                        HashTable.TracePoint.SEARCH_RESULT_RETURNED
+                ), traceLog)
+        );
     }
 
     @Test
@@ -127,25 +140,29 @@ class HashTableTest {
         hashTable.insert(8, 80);
         traceLog.clear();
 
-        assertTrue(hashTable.delete(8));
-        assertEquals(List.of(
-                HashTable.TracePoint.HASH_COMPUTED,
-                HashTable.TracePoint.BUCKET_NOT_EMPTY,
-                HashTable.TracePoint.KEY_FOUND,
-                HashTable.TracePoint.ENTRY_DELETED
-        ), traceLog);
-        assertNull(hashTable.search(8));
+        assertAll(
+                () -> assertTrue(hashTable.delete(8)),
+                () -> assertEquals(List.of(
+                        HashTable.TracePoint.HASH_COMPUTED,
+                        HashTable.TracePoint.BUCKET_NOT_EMPTY,
+                        HashTable.TracePoint.KEY_FOUND,
+                        HashTable.TracePoint.ENTRY_DELETED
+                ), traceLog),
+                () -> assertNull(hashTable.search(8))
+        );
     }
 
     @Test
     @DisplayName("DELETE из пустого слота: A -> B -> E")
     void deleteFromEmptySlot() {
-        assertFalse(hashTable.delete(3));
-        assertEquals(List.of(
-                HashTable.TracePoint.HASH_COMPUTED,
-                HashTable.TracePoint.BUCKET_EMPTY,
-                HashTable.TracePoint.KEY_NOT_FOUND
-        ), traceLog);
+        assertAll(
+                () -> assertFalse(hashTable.delete(3)),
+                () -> assertEquals(List.of(
+                        HashTable.TracePoint.HASH_COMPUTED,
+                        HashTable.TracePoint.BUCKET_EMPTY,
+                        HashTable.TracePoint.KEY_NOT_FOUND
+                ), traceLog)
+        );
     }
 
     @Test
@@ -155,12 +172,14 @@ class HashTableTest {
         hashTable.insert(8, 80);
         traceLog.clear();
 
-        assertFalse(hashTable.delete(15));
-        assertEquals(List.of(
-                HashTable.TracePoint.HASH_COMPUTED,
-                HashTable.TracePoint.BUCKET_NOT_EMPTY,
-                HashTable.TracePoint.KEY_NOT_FOUND
-        ), traceLog);
+        assertAll(
+                () -> assertFalse(hashTable.delete(15)),
+                () -> assertEquals(List.of(
+                        HashTable.TracePoint.HASH_COMPUTED,
+                        HashTable.TracePoint.BUCKET_NOT_EMPTY,
+                        HashTable.TracePoint.KEY_NOT_FOUND
+                ), traceLog)
+        );
     }
 
     @Test
@@ -172,9 +191,11 @@ class HashTableTest {
 
         hashTable.insert(15, 150);
 
-        assertEquals(2, hashTable.getSize());
-        assertEquals(150, hashTable.search(15));
-        assertEquals(1, hashTable.getBucketSize(1));
+        assertAll(
+                () -> assertEquals(2, hashTable.getSize()),
+                () -> assertEquals(150, hashTable.search(15)),
+                () -> assertEquals(1, hashTable.getBucketSize(1))
+        );
     }
 
     @Test

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -30,9 +31,11 @@ class DomainModelTest {
         @Test
         @DisplayName("Создание персонажа")
         void testCreation() {
-            assertEquals("Артур", arthur.getName());
-            assertNull(arthur.getCurrentPhrase());
-            assertEquals(LifeStyle.Quality.NORMAL, arthur.getLifeStyle().getQuality());
+            assertAll(
+                    () -> assertEquals("Артур", arthur.getName()),
+                    () -> assertNull(arthur.getCurrentPhrase()),
+                    () -> assertEquals(LifeStyle.Quality.NORMAL, arthur.getLifeStyle().getQuality())
+            );
         }
 
         @Test
@@ -42,9 +45,11 @@ class DomainModelTest {
 
             Words words = arthur.sayPhrase(phrase);
 
-            assertEquals(phrase, words.getContent());
-            assertEquals(arthur, words.getSpeaker());
-            assertEquals(phrase, arthur.getCurrentPhrase());
+            assertAll(
+                    () -> assertEquals(phrase, words.getContent()),
+                    () -> assertEquals(arthur, words.getSpeaker()),
+                    () -> assertEquals(phrase, arthur.getCurrentPhrase())
+            );
         }
     }
 
@@ -57,8 +62,10 @@ class DomainModelTest {
         void testNormalLifeStyle() {
             LifeStyle lifeStyle = new LifeStyle(LifeStyle.Quality.NORMAL);
 
-            assertFalse(lifeStyle.hasProblems());
-            assertEquals("обычный образ жизни", lifeStyle.getDescription());
+            assertAll(
+                    () -> assertFalse(lifeStyle.hasProblems()),
+                    () -> assertEquals("обычный образ жизни", lifeStyle.getDescription())
+            );
         }
 
         @Test
@@ -66,8 +73,10 @@ class DomainModelTest {
         void testProblematicLifeStyle() {
             LifeStyle lifeStyle = new LifeStyle(LifeStyle.Quality.PROBLEMATIC);
 
-            assertTrue(lifeStyle.hasProblems());
-            assertEquals("большие проблемы с образом жизни", lifeStyle.getDescription());
+            assertAll(
+                    () -> assertTrue(lifeStyle.hasProblems()),
+                    () -> assertEquals("большие проблемы с образом жизни", lifeStyle.getDescription())
+            );
         }
 
         @Test
@@ -77,8 +86,10 @@ class DomainModelTest {
 
             lifeStyle.setQuality(LifeStyle.Quality.CRITICAL);
 
-            assertTrue(lifeStyle.hasProblems());
-            assertEquals("критические проблемы с образом жизни", lifeStyle.getDescription());
+            assertAll(
+                    () -> assertTrue(lifeStyle.hasProblems()),
+                    () -> assertEquals("критические проблемы с образом жизни", lifeStyle.getDescription())
+            );
         }
     }
 
@@ -92,10 +103,12 @@ class DomainModelTest {
             Person speaker = new Person("Артур");
             Words words = new Words("тестовая фраза", speaker);
 
-            assertEquals("тестовая фраза", words.getContent());
-            assertEquals(speaker, words.getSpeaker());
-            assertFalse(words.isTransported());
-            assertNull(words.getDestination());
+            assertAll(
+                    () -> assertEquals("тестовая фраза", words.getContent()),
+                    () -> assertEquals(speaker, words.getSpeaker()),
+                    () -> assertFalse(words.isTransported()),
+                    () -> assertNull(words.getDestination())
+            );
         }
 
         @Test
@@ -107,10 +120,12 @@ class DomainModelTest {
             words.transportTo(galaxy);
             words.recordTravelMetrics(1.25, 33.5);
 
-            assertTrue(words.isTransported());
-            assertEquals(galaxy, words.getDestination());
-            assertEquals(1.25, words.getTravelTime(), 1e-9);
-            assertEquals(33.5, words.getEffectiveSpeed(), 1e-9);
+            assertAll(
+                    () -> assertTrue(words.isTransported()),
+                    () -> assertEquals(galaxy, words.getDestination()),
+                    () -> assertEquals(1.25, words.getTravelTime(), 1e-9),
+                    () -> assertEquals(33.5, words.getEffectiveSpeed(), 1e-9)
+            );
         }
     }
 
@@ -126,10 +141,12 @@ class DomainModelTest {
 
             SpaceTimeHole hole = fabric.openRandomHole(galaxy);
 
-            assertNotNull(hole);
-            assertTrue(hole.isOpen());
-            assertTrue(fabric.hasOpenHole());
-            assertEquals(galaxy, hole.getDestination());
+            assertAll(
+                    () -> assertNotNull(hole),
+                    () -> assertTrue(hole.isOpen()),
+                    () -> assertTrue(fabric.hasOpenHole()),
+                    () -> assertEquals(galaxy, hole.getDestination())
+            );
         }
 
         @Test
@@ -141,8 +158,10 @@ class DomainModelTest {
 
             fabric.closeHole();
 
-            assertFalse(fabric.hasOpenHole());
-            assertDoesNotThrow(fabric::closeHole);
+            assertAll(
+                    () -> assertFalse(fabric.hasOpenHole()),
+                    () -> assertDoesNotThrow(fabric::closeHole)
+            );
         }
     }
 
@@ -159,8 +178,10 @@ class DomainModelTest {
 
             hole.transport(words);
 
-            assertTrue(words.isTransported());
-            assertEquals(galaxy, words.getDestination());
+            assertAll(
+                    () -> assertTrue(words.isTransported()),
+                    () -> assertEquals(galaxy, words.getDestination())
+            );
         }
 
         @Test
@@ -173,8 +194,10 @@ class DomainModelTest {
             double shortTime = hole.calculateTransferTime(shortWords);
             double longTime = hole.calculateTransferTime(longWords);
 
-            assertTrue(longTime > shortTime);
-            assertEquals(0.5 + shortWords.getCharacterCount() / 100.0, shortTime, 1e-9);
+            assertAll(
+                    () -> assertTrue(longTime > shortTime),
+                    () -> assertEquals(0.5 + shortWords.getCharacterCount() / 100.0, shortTime, 1e-9)
+            );
         }
 
         @Test
@@ -201,10 +224,12 @@ class DomainModelTest {
 
             hole.transport(words, cosmos);
 
-            assertTrue(words.isTransported());
-            assertEquals(galaxy, words.getDestination());
-            assertTrue(words.getTravelTime() > 0.0);
-            assertTrue(words.getEffectiveSpeed() > 0.0);
+            assertAll(
+                    () -> assertTrue(words.isTransported()),
+                    () -> assertEquals(galaxy, words.getDestination()),
+                    () -> assertTrue(words.getTravelTime() > 0.0),
+                    () -> assertTrue(words.getEffectiveSpeed() > 0.0)
+            );
         }
 
         @Test
@@ -230,8 +255,10 @@ class DomainModelTest {
 
             galaxy.addInhabitant(creature);
 
-            assertTrue(galaxy.hasWarlikeCreatures());
-            assertEquals(1, galaxy.getInhabitants().size());
+            assertAll(
+                    () -> assertTrue(galaxy.hasWarlikeCreatures()),
+                    () -> assertEquals(1, galaxy.getInhabitants().size())
+            );
         }
 
         @Test
@@ -272,9 +299,11 @@ class DomainModelTest {
         void testCreation() {
             WarlikeCreature creature = new WarlikeCreature("Неизвестный вид");
 
-            assertTrue(creature.isStrange());
-            assertTrue(creature.isWarlike());
-            assertTrue(creature.isOnBrinkOfWar());
+            assertAll(
+                    () -> assertTrue(creature.isStrange()),
+                    () -> assertTrue(creature.isWarlike()),
+                    () -> assertTrue(creature.isOnBrinkOfWar())
+            );
         }
 
         @Test
@@ -283,8 +312,10 @@ class DomainModelTest {
             WarlikeCreature creature = new WarlikeCreature("Вид А");
             creature.setWarReadiness(WarlikeCreature.WarReadiness.AT_WAR);
 
-            assertFalse(creature.isOnBrinkOfWar());
-            assertEquals(WarlikeCreature.WarReadiness.AT_WAR, creature.getWarReadiness());
+            assertAll(
+                    () -> assertFalse(creature.isOnBrinkOfWar()),
+                    () -> assertEquals(WarlikeCreature.WarReadiness.AT_WAR, creature.getWarReadiness())
+            );
         }
     }
 
@@ -297,9 +328,11 @@ class DomainModelTest {
         void testCreation() {
             InterstellarWar war = new InterstellarWar("ужасная межзвездная война");
 
-            assertEquals("ужасная межзвездная война", war.getDescription());
-            assertTrue(war.isTerrible());
-            assertFalse(war.isStarted());
+            assertAll(
+                    () -> assertEquals("ужасная межзвездная война", war.getDescription()),
+                    () -> assertTrue(war.isTerrible()),
+                    () -> assertFalse(war.isStarted())
+            );
         }
 
         @Test
@@ -335,13 +368,15 @@ class DomainModelTest {
         void testInitialState() {
             Scenario scenario = new Scenario();
 
-            assertEquals("Артур", scenario.getArthur().getName());
-            assertTrue(scenario.getArthur().getLifeStyle().hasProblems());
-            assertTrue(scenario.getDistantGalaxy().isDistant());
-            assertTrue(scenario.getDistantGalaxy().hasWarlikeCreatures());
-            assertTrue(scenario.getDistantGalaxy().isOnBrinkOfWar());
-            assertFalse(scenario.isScenarioExecuted());
-            assertNull(scenario.getSpokenWords());
+            assertAll(
+                    () -> assertEquals("Артур", scenario.getArthur().getName()),
+                    () -> assertTrue(scenario.getArthur().getLifeStyle().hasProblems()),
+                    () -> assertTrue(scenario.getDistantGalaxy().isDistant()),
+                    () -> assertTrue(scenario.getDistantGalaxy().hasWarlikeCreatures()),
+                    () -> assertTrue(scenario.getDistantGalaxy().isOnBrinkOfWar()),
+                    () -> assertFalse(scenario.isScenarioExecuted()),
+                    () -> assertNull(scenario.getSpokenWords())
+            );
         }
 
         @Test
@@ -351,15 +386,17 @@ class DomainModelTest {
 
             Words words = scenario.execute();
 
-            assertNotNull(words);
-            assertEquals("А у меня, кажется, большие проблемы с образом жизни", words.getContent());
-            assertEquals(scenario.getArthur(), words.getSpeaker());
-            assertTrue(words.isTransported());
-            assertEquals(scenario.getDistantGalaxy(), words.getDestination());
-            assertTrue(words.getTravelTime() > 0.0);
-            assertTrue(words.getEffectiveSpeed() > 0.0);
-            assertFalse(scenario.getSpaceTimeFabric().hasOpenHole());
-            assertTrue(scenario.isScenarioExecuted());
+            assertAll(
+                    () -> assertNotNull(words),
+                    () -> assertEquals("А у меня, кажется, большие проблемы с образом жизни", words.getContent()),
+                    () -> assertEquals(scenario.getArthur(), words.getSpeaker()),
+                    () -> assertTrue(words.isTransported()),
+                    () -> assertEquals(scenario.getDistantGalaxy(), words.getDestination()),
+                    () -> assertTrue(words.getTravelTime() > 0.0),
+                    () -> assertTrue(words.getEffectiveSpeed() > 0.0),
+                    () -> assertFalse(scenario.getSpaceTimeFabric().hasOpenHole()),
+                    () -> assertTrue(scenario.isScenarioExecuted())
+            );
         }
 
         @Test
@@ -368,9 +405,11 @@ class DomainModelTest {
             Scenario scenario = new Scenario();
 
             for (WarlikeCreature creature : scenario.getDistantGalaxy().getInhabitants()) {
-                assertTrue(creature.isStrange());
-                assertTrue(creature.isWarlike());
-                assertTrue(creature.isOnBrinkOfWar());
+                assertAll(
+                        () -> assertTrue(creature.isStrange()),
+                        () -> assertTrue(creature.isWarlike()),
+                        () -> assertTrue(creature.isOnBrinkOfWar())
+                );
             }
         }
     }
