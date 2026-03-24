@@ -2,7 +2,7 @@ package ru.itmo.tpo.task3;
 
 /**
  * Персонаж (участник событий).
- * Артур — произносит фразу.
+ * Артур - произносит фразу.
  */
 public class Person {
     private final String name;

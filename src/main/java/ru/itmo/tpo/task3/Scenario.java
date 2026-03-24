@@ -42,14 +42,6 @@ public class Scenario {
         this.scenarioExecuted = false;
     }
 
-    /**
-     * Выполняет весь сценарий:
-     * 1. Артур произносит фразу
-     * 2. В ткани пространства-времени открывается дыра
-     * 3. Слова переносятся через космос в далёкую галактику
-     *
-     * @return слова Артура, перенесённые в далёкую галактику
-     */
     public Words execute() {
         // 1. Артур произносит фразу
         spokenWords = arthur.sayPhrase(
@@ -59,7 +51,7 @@ public class Scenario {
         SpaceTimeHole hole = spaceTimeFabric.openRandomHole(distantGalaxy);
 
         // 3. Дыра переносит слова далеко-далеко во времени через космос
-    hole.transport(spokenWords, cosmos);
+        hole.transport(spokenWords, cosmos);
 
         // 4. Дыра закрывается
         spaceTimeFabric.closeHole();
