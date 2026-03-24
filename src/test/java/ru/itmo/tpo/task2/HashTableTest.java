@@ -178,9 +178,14 @@ class HashTableTest {
     }
 
     @Test
-    @DisplayName("Граничные случаи: невалидная емкость и отрицательный ключ")
+    @DisplayName("Граничные случаи: невалидная емкость")
     void handlesBoundaryCases() {
         assertThrows(IllegalArgumentException.class, () -> new HashTable(0));
+    }
+
+    @Test
+    @DisplayName("Граничные случаи: отрицательный ключ")
+    void negativeKey() {
         assertEquals(4, hashTable.hash(-3));
     }
 }
