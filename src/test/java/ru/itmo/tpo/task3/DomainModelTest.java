@@ -71,7 +71,7 @@ class DomainModelTest {
     class LifeStyleTest {
 
         @Test
-        @DisplayName("Нормальный образ жизни — нет проблем")
+        @DisplayName("Нормальный образ жизни - нет проблем")
         void testNormalLifeStyle() {
             LifeStyle lifeStyle = new LifeStyle(LifeStyle.Quality.NORMAL);
             assertFalse(lifeStyle.hasProblems());
@@ -79,7 +79,7 @@ class DomainModelTest {
         }
 
         @Test
-        @DisplayName("Проблемный образ жизни — есть проблемы")
+        @DisplayName("Проблемный образ жизни - есть проблемы")
         void testProblematicLifeStyle() {
             LifeStyle lifeStyle = new LifeStyle(LifeStyle.Quality.PROBLEMATIC);
             assertTrue(lifeStyle.hasProblems());
@@ -87,7 +87,7 @@ class DomainModelTest {
         }
 
         @Test
-        @DisplayName("Критический образ жизни — есть проблемы")
+        @DisplayName("Критический образ жизни - есть проблемы")
         void testCriticalLifeStyle() {
             LifeStyle lifeStyle = new LifeStyle(LifeStyle.Quality.CRITICAL);
             assertTrue(lifeStyle.hasProblems());
@@ -191,7 +191,7 @@ class DomainModelTest {
         }
 
         @Test
-        @DisplayName("Закрытие при отсутствии дыры — без ошибки")
+        @DisplayName("Закрытие при отсутствии дыры - без ошибки")
         void testCloseWhenNoHole() {
             SpaceTimeFabric fabric = new SpaceTimeFabric();
             assertDoesNotThrow(fabric::closeHole);

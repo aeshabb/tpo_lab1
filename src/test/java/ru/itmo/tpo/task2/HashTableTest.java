@@ -20,15 +20,15 @@ import static org.junit.jupiter.api.Assertions.*;
  * 4. Граничные случаи
  *
  * Характерные точки алгоритма:
- * A: HASH_COMPUTED           — хеш вычислен
- * B: BUCKET_EMPTY            — корзина пуста
- * C: BUCKET_NOT_EMPTY        — корзина не пуста
- * D: KEY_FOUND               — ключ найден в цепочке
- * E: KEY_NOT_FOUND           — ключ не найден в цепочке
- * F: ENTRY_INSERTED          — элемент вставлен
- * G: ENTRY_UPDATED           — элемент обновлён
- * H: ENTRY_DELETED           — элемент удалён
- * I: SEARCH_RESULT_RETURNED  — результат поиска возвращён
+ * A: HASH_COMPUTED           - хеш вычислен
+ * B: BUCKET_EMPTY            - корзина пуста
+ * C: BUCKET_NOT_EMPTY        - корзина не пуста
+ * D: KEY_FOUND               - ключ найден в цепочке
+ * E: KEY_NOT_FOUND           - ключ не найден в цепочке
+ * F: ENTRY_INSERTED          - элемент вставлен
+ * G: ENTRY_UPDATED           - элемент обновлён
+ * H: ENTRY_DELETED           - элемент удалён
+ * I: SEARCH_RESULT_RETURNED  - результат поиска возвращён
  */
 @DisplayName("Тесты хеш-таблицы с закрытой адресацией")
 class HashTableTest {
@@ -130,7 +130,7 @@ class HashTableTest {
         }
 
         @Test
-        @DisplayName("Поиск с коллизией — нужный элемент в цепочке")
+        @DisplayName("Поиск с коллизией - нужный элемент в цепочке")
         void testSearchInChain() {
             hashTable.insert(1, 10);
             hashTable.insert(8, 80);
@@ -212,7 +212,7 @@ class HashTableTest {
     // =================== Тесты характерных точек алгоритма ===================
 
     @Nested
-    @DisplayName("Прохождение характерных точек — INSERT")
+    @DisplayName("Прохождение характерных точек - INSERT")
     class InsertTraceTest {
 
         @Test
@@ -268,7 +268,7 @@ class HashTableTest {
     }
 
     @Nested
-    @DisplayName("Прохождение характерных точек — SEARCH")
+    @DisplayName("Прохождение характерных точек - SEARCH")
     class SearchTraceTest {
 
         @Test
@@ -287,7 +287,7 @@ class HashTableTest {
         }
 
         @Test
-        @DisplayName("SEARCH — ключ найден: A → C → D → I")
+        @DisplayName("SEARCH - ключ найден: A → C → D → I")
         void testSearchFoundTrace() {
             hashTable.insert(5, 50);
             traceLog.clear();
@@ -305,7 +305,7 @@ class HashTableTest {
         }
 
         @Test
-        @DisplayName("SEARCH — ключ не найден в непустой корзине: A → C → E → I")
+        @DisplayName("SEARCH - ключ не найден в непустой корзине: A → C → E → I")
         void testSearchNotFoundTrace() {
             hashTable.insert(1, 10);
             traceLog.clear();
@@ -324,7 +324,7 @@ class HashTableTest {
     }
 
     @Nested
-    @DisplayName("Прохождение характерных точек — DELETE")
+    @DisplayName("Прохождение характерных точек - DELETE")
     class DeleteTraceTest {
 
         @Test
@@ -343,7 +343,7 @@ class HashTableTest {
         }
 
         @Test
-        @DisplayName("DELETE — ключ найден: A → C → D → H")
+        @DisplayName("DELETE - ключ найден: A → C → D → H")
         void testDeleteFoundTrace() {
             hashTable.insert(5, 50);
             traceLog.clear();
@@ -361,7 +361,7 @@ class HashTableTest {
         }
 
         @Test
-        @DisplayName("DELETE — ключ не найден в непустой корзине: A → C → E")
+        @DisplayName("DELETE - ключ не найден в непустой корзине: A → C → E")
         void testDeleteNotFoundInChainTrace() {
             hashTable.insert(1, 10);
             traceLog.clear();
@@ -414,7 +414,7 @@ class HashTableTest {
     class BoundaryTest {
 
         @Test
-        @DisplayName("Ёмкость 1 — все в одной корзине")
+        @DisplayName("Ёмкость 1 - все в одной корзине")
         void testCapacityOne() {
             HashTable ht = new HashTable(1);
             ht.insert(1, 10);
@@ -526,7 +526,7 @@ class HashTableTest {
         }
 
         @Test
-        @DisplayName("Сценарий: цепочка из 3 элементов — поиск каждого")
+        @DisplayName("Сценарий: цепочка из 3 элементов - поиск каждого")
         void testChainSearchTrace() {
             // Вставляем 3 элемента в одну корзину: 1, 8, 15 (все % 7 = 1)
             hashTable.insert(1, 10);

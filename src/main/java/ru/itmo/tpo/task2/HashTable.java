@@ -55,7 +55,7 @@ public class HashTable {
 
     public HashTable(int capacity) {
         if (capacity <= 0) {
-            throw new IllegalArgumentException("Размер должна быть положительной: " + capacity);
+            throw new IllegalArgumentException("Размер должен быть положительный: " + capacity);
         }
         this.capacity = capacity;
         this.table = new LinkedList[capacity];
@@ -82,17 +82,6 @@ public class HashTable {
         return Math.floorMod(key, capacity);
     }
 
-    /**
-     * Вставляет пару ключ-значение в хеш-таблицу.
-     * Если ключ уже существует, обновляет значение.
-     *
-     * Алгоритм:
-     * 1. Вычислить хеш → индекс корзины         [HASH_COMPUTED]
-     * 2. Если корзина пуста → создать список      [BUCKET_EMPTY]
-     *    Иначе → искать ключ в цепочке            [BUCKET_NOT_EMPTY]
-     * 3. Если ключ найден → обновить значение     [KEY_FOUND, ENTRY_UPDATED]
-     *    Если не найден → добавить в конец         [KEY_NOT_FOUND, ENTRY_INSERTED]
-     */
     public void insert(int key, int value) {
         int index = hash(key);
         trace(TracePoint.HASH_COMPUTED);
@@ -120,16 +109,6 @@ public class HashTable {
         }
     }
 
-    /**
-     * Ищет значение по ключу в хеш-таблице.
-     *
-     * Алгоритм:
-     * 1. Вычислить хеш → индекс корзины         [HASH_COMPUTED]
-     * 2. Если корзина пуста → вернуть null        [BUCKET_EMPTY, SEARCH_RESULT_RETURNED]
-     *    Иначе → искать ключ в цепочке            [BUCKET_NOT_EMPTY]
-     * 3. Если найден → вернуть значение           [KEY_FOUND, SEARCH_RESULT_RETURNED]
-     *    Если не найден → вернуть null             [KEY_NOT_FOUND, SEARCH_RESULT_RETURNED]
-     */
     public Integer search(int key) {
         int index = hash(key);
         trace(TracePoint.HASH_COMPUTED);
@@ -154,16 +133,7 @@ public class HashTable {
         return null;
     }
 
-    /**
-     * Удаляет элемент по ключу из хеш-таблицы.
-     *
-     * Алгоритм:
-     * 1. Вычислить хеш → индекс корзины         [HASH_COMPUTED]
-     * 2. Если корзина пуста → элемент не найден   [BUCKET_EMPTY, KEY_NOT_FOUND]
-     *    Иначе → искать ключ в цепочке            [BUCKET_NOT_EMPTY]
-     * 3. Если найден → удалить элемент            [KEY_FOUND, ENTRY_DELETED]
-     *    Если не найден → ничего не делать         [KEY_NOT_FOUND]
-     */
+
     public boolean delete(int key) {
         int index = hash(key);
         trace(TracePoint.HASH_COMPUTED);
@@ -209,7 +179,7 @@ public class HashTable {
 
     public int getBucketSize(int index) {
         if (index < 0 || index >= capacity) {
-            throw new IndexOutOfBoundsException("Индекс корзины вне диапазона: " + index);
+            throw new IndexOutOfBoundsException("Индекс бакета вне диапазона: " + index);
         }
         return table[index] == null ? 0 : table[index].size();
     }

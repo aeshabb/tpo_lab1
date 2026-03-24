@@ -4,7 +4,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -83,7 +82,7 @@ class TangentSeriesTest {
     class FunctionPropertiesTest {
 
         @Test
-        @DisplayName("tg(x) — нечётная функция: tg(-x) = -tg(x)")
+        @DisplayName("tg(x) - нечётная функция: tg(-x) = -tg(x)")
         void testOddFunction() {
             double[] testValues = {
                     1e-6,
@@ -233,7 +232,7 @@ class TangentSeriesTest {
     class PeriodicityTest {
 
         @Test
-        @DisplayName("tg(x + π) = tg(x) — периодичность")
+        @DisplayName("tg(x + π) = tg(x) - периодичность")
         void testPeriodicity() {
             double x = Math.PI / 6;
             double result1 = TangentSeries.compute(x);
