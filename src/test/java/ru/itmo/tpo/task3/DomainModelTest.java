@@ -4,15 +4,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Тесты доменной модели")
 class DomainModelTest {
@@ -184,20 +179,27 @@ class DomainModelTest {
             );
         }
 
-        @Test
-        @DisplayName("Время переноса зависит от длины фразы")
-        void testCalculateTransferTime() {
+        @ParameterizedTest(name = "Длина фразы {0} символов")
+        @ValueSource(ints = {0, 50, 100, 150})
+        @DisplayName("Время переноса зависит от длины фразы (Анализ граничных значений и классов эквивалентности)")
+        void testCalculateTransferTimeEquivalence(int length) {
             SpaceTimeHole hole = new SpaceTimeHole(new Galaxy("Далекая галактика", true));
-            Words shortWords = new Words("привет", new Person("Артур"));
-            Words longWords = new Words("Очень длинная фраза для проверки времени переноса", new Person("Артур"));
+            String content = "a".repeat(length);
+            Words words = new Words(content, new Person("Артур"));
 
-            double shortTime = hole.calculateTransferTime(shortWords);
-            double longTime = hole.calculateTransferTime(longWords);
+            double transferRate = 100.0;
+            double expectedTime = 0.5 + length / transferRate;
+            assertEquals(expectedTime, hole.calculateTransferTime(words, transferRate), 1e-9);
+        }
 
-            assertAll(
-                    () -> assertTrue(longTime > shortTime),
-                    () -> assertEquals(0.5 + shortWords.getCharacterCount() / 100.0, shortTime, 1e-9)
-            );
+        @Test
+        @DisplayName("Отрицательная скорость переноса символов вызывает исключение")
+        void testCalculateTransferTimeInvalidRate() {
+            SpaceTimeHole hole = new SpaceTimeHole(new Galaxy("Далекая галактика", true));
+            Words words = new Words("фраза", new Person("Артур"));
+
+            assertThrows(IllegalArgumentException.class, () -> hole.calculateTransferTime(words, 0.0));
+            assertThrows(IllegalArgumentException.class, () -> hole.calculateTransferTime(words, -50.0));
         }
 
         @Test
@@ -207,11 +209,36 @@ class DomainModelTest {
             Cosmos cosmos = new Cosmos();
             SpaceTimeHole hole = new SpaceTimeHole(galaxy);
             Words words = new Words("фраза", new Person("Артур"));
+            double rate = 100.0;
 
             double expectedDistance = galaxy.distanceFromOrigin() / cosmos.getSpaceCurvatureFactor();
-            double expectedTime = hole.calculateTransferTime(words);
+            double expectedTime = hole.calculateTransferTime(words, rate);
 
-            assertEquals(expectedDistance / expectedTime, hole.calculateEffectiveSpeed(words, cosmos), 1e-9);
+            assertEquals(expectedDistance / expectedTime, hole.calculateEffectiveSpeed(words, cosmos, rate), 1e-9);
+        }
+
+        @Test
+        @DisplayName("Проверка гиперболической зависимости: EffectiveSpeed = k / TransferTime (v = k/x)")
+        void testEffectiveSpeedIsInverseProportionalToTime() {
+            Galaxy galaxy = new Galaxy("Тестовая галактика", true, 300.0, 400.0, 0.0);
+            Cosmos cosmos = new Cosmos();
+            SpaceTimeHole hole = new SpaceTimeHole(galaxy);
+
+            double k = cosmos.calculateEffectiveDistance(galaxy);
+
+            Words shortWords = new Words("", new Person("Артур"));
+            double smallX = hole.calculateTransferTime(shortWords, 100.0);
+            double speedAtSmallX = hole.calculateEffectiveSpeed(shortWords, cosmos, 100.0);
+
+            String massiveContent = "a".repeat(1000000);
+            Words longWords = new Words(massiveContent, new Person("Артур"));
+            double largeX = hole.calculateTransferTime(longWords, 0.1);
+            double speedAtLargeX = hole.calculateEffectiveSpeed(longWords, cosmos, 0.1);
+
+            assertAll(
+                    () -> assertEquals(k / smallX, speedAtSmallX, 1e-9, "Отклонение от k/x на малых значениях x"),
+                    () -> assertEquals(k / largeX, speedAtLargeX, 1e-9, "Отклонение от k/x на больших значениях x")
+            );
         }
 
         @Test
@@ -222,7 +249,7 @@ class DomainModelTest {
             SpaceTimeHole hole = new SpaceTimeHole(galaxy);
             Words words = new Words("фраза", new Person("Артур"));
 
-            hole.transport(words, cosmos);
+            hole.transport(words, cosmos, 100.0);
 
             assertAll(
                     () -> assertTrue(words.isTransported()),

@@ -51,7 +51,7 @@ public class Scenario {
         SpaceTimeHole hole = spaceTimeFabric.openRandomHole(distantGalaxy);
 
         // 3. Дыра переносит слова далеко-далеко во времени через космос
-        hole.transport(spokenWords, cosmos);
+        hole.transport(spokenWords, cosmos, 100.0);
 
         // 4. Дыра закрывается
         spaceTimeFabric.closeHole();

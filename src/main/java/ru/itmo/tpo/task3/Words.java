@@ -11,6 +11,7 @@ public class Words {
     private double travelTime;
     private double effectiveSpeed;
 
+
     public Words(String content, Person speaker) {
         this.content = content;
         this.speaker = speaker;

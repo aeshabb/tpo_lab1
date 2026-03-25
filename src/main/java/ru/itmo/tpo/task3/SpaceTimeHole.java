@@ -36,23 +36,26 @@ public class SpaceTimeHole {
      * Вычисляет длительность переноса слов через дыру.
      * Чем длиннее фраза, тем немного больше длительность.
      */
-    public double calculateTransferTime(Words words) {
-        return BASE_TRANSFER_TIME + words.getCharacterCount() / 100.0;
+    public double calculateTransferTime(Words words, double characterTransferRate) {
+        if (characterTransferRate <= 0) {
+            throw new IllegalArgumentException("Скорость передачи символов должна быть положительной");
+        }
+        return BASE_TRANSFER_TIME + words.getCharacterCount() / characterTransferRate;
     }
 
     /**
      * Эффективная скорость переноса слов с учётом искривления пространства.
      */
-    public double calculateEffectiveSpeed(Words words, Cosmos cosmos) {
+    public double calculateEffectiveSpeed(Words words, Cosmos cosmos, double characterTransferRate) {
         double distance = cosmos.calculateEffectiveDistance(destination);
-        double time = calculateTransferTime(words);
+        double time = calculateTransferTime(words, characterTransferRate);
         return distance / time;
     }
 
-    public void transport(Words words, Cosmos cosmos) {
+    public void transport(Words words, Cosmos cosmos, double characterTransferRate) {
         transport(words);
-        double time = calculateTransferTime(words);
-        double speed = calculateEffectiveSpeed(words, cosmos);
+        double time = calculateTransferTime(words, characterTransferRate);
+        double speed = calculateEffectiveSpeed(words, cosmos, characterTransferRate);
         words.recordTravelMetrics(time, speed);
     }
 
